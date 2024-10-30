@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Formulario de Registro</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f9;
+      color: #333;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+    }
+
+    .container {
+      max-width: 600px;
+      background-color: #fff;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      padding: 20px;
+      margin: 20px;
+    }
+
+    h2 {
+      text-align: center;
+      color: #333;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    label {
+      font-weight: bold;
+      color: #555;
+    }
+
+    input[type="text"],
+    input[type="number"] {
+      padding: 10px;
+      font-size: 16px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    button {
+      background-color: #5a67d8;
+      color: #fff;
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #4c51bf;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Formulario de Registro de Consumo</h2>
+    <form id="registroForm">
+      <label for="lugar">Lugar / Apto / Edif.:</label>
+      <input type="text" id="lugar" required>
+
+      <label for="medidores">Número de Medidores:</label>
+      <input type="number" id="medidores" required>
+
+      <label for="contratos">Número de Contratos:</label>
+      <input type="number" id="contratos" required>
+
+      <button type="submit">Guardar</button>
+    </form>
+    <p style="text-align: center; margin-top: 15px;">
+      <a href="visualizacion.html">Ver registros guardados</a>
+    </p>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+    import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCFfkmEDjqAwJNtnKByRQNt9NUQs5UdNa0",
+      authDomain: "rrhh-ee7e3.firebaseapp.com",
+      projectId: "rrhh-ee7e3",
+      storageBucket: "rrhh-ee7e3.appspot.com", 
+      messagingSenderId: "605891607617",
+      appId: "1:605891607617:web:daedbd7b7b7b5a8b901ac0",
+      measurementId: "G-Q801R9M95S"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const registroForm = document.getElementById("registroForm");
+
+    registroForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const lugar = document.getElementById("lugar").value;
+      const medidores = document.getElementById("medidores").value;
+      const contratos = document.getElementById("contratos").value;
+
+      await addDoc(collection(db, "consumoRondas"), {
+        lugar,
+        medidores,
+        contratos,
+        consumo: 0,
+        historial: []
+      });
+
+      registroForm.reset();
+      alert("Registro guardado exitosamente.");
+    });
+  </script>
+</body>
+</html>

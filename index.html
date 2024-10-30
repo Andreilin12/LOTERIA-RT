@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inicio de Sesión</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #2C3E50;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .login-container {
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            padding: 40px;
+            width: 350px;
+            text-align: center;
+        }
+        h2 {
+            margin-bottom: 20px;
+        }
+        .nav-tabs {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+        }
+        .nav-tabs button {
+            background-color: #007BFF;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .nav-tabs button:hover {
+            background-color: #0056b3;
+        }
+        .nav-tabs .active {
+            background-color: #0056b3;
+        }
+        .form-container {
+            display: none;
+        }
+        .form-container.active {
+            display: block;
+        }
+        input[type="text"], input[type="email"], input[type="password"], input[type="tel"], select {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+        .btn {
+            background-color: #007BFF;
+            color: white;
+            padding: 10px;
+            width: 100%;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer; 
+            margin-top: 20px;
+            transition: background-color 0.3s;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+          .back-button {
+    position: fixed;
+    top: 10px; /* Distancia desde la parte superior */
+    left: 10px; /* Distancia desde el borde izquierdo */
+    background-color: #16a085; /* Color de fondo */
+    color: #fff; /* Color del texto y del icono */
+    border: none;
+    border-radius: 4px;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    transition: background-color 0.3s; /* Transición suave para el color de fondo */
+    z-index: 1000; /* Asegura que el botón esté sobre otros elementos */
+}
+
+.back-button i {
+    margin-right: 8px; /* Espacio entre el icono y el texto */
+}
+
+.back-button:hover {
+    background-color: #2c2e50; /* Color de fondo al pasar el ratón */
+}
+
+    
+     /* Desactivar la selección de texto y el efecto de arrastre en todos los elementos */
+* {
+  -webkit-user-select: none; /* Safari */
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* IE 10+ */
+  user-select: none; /* estándar */
+
+  -webkit-user-drag: none; /* Safari */
+  -khtml-user-drag: none; /* Konqueror HTML */
+  -moz-user-drag: none; /* Firefox */
+  -o-user-drag: none; /* Opera */
+  user-drag: none; /* estándar */
+ } 
+    </style>
+</head>
+<body>
+<div class="login-container">
+
+     <button class="back-button" onclick="goBack()">
+        <i class="fas fa-arrow-left"></i> Volver
+    </button>   
+
+    <h2>Bienvenido</h2>
+    <div class="nav-tabs">
+        <button class="tab-link" data-target="register">Registrarse</button>
+        <button class="tab-link" data-target="reset">Restablecer Contraseña</button>
+    </div>
+
+    <div id="register" class="form-container">
+        <form id="registerForm">
+            <input type="text" id="registerName" placeholder="Nombre y Apellido" required>
+            <input type="text" id="registerDepartment" placeholder="Departamento" required>
+            <input type="text" id="registerArea" placeholder="Área (e.g., CCTV, Cerrajería)" required>
+            <input type="text" id="registerPosition" placeholder="Posición en la Empresa" required>
+            <input type="file" id="registerPhoto" accept="image/*">
+            <input type="email" id="registerEmail" placeholder="Correo Electrónico" required>
+            <input type="password" id="registerPassword" placeholder="Contraseña" required>
+            <input type="tel" id="registerPhone" placeholder="Teléfono o Flota" required>
+            <button type="submit" class="btn">Crear Cuenta</button>
+        </form>
+    </div>
+
+    <div id="reset" class="form-container">
+        <form id="resetForm">
+            <input type="email" id="resetEmail" placeholder="Correo Electrónico" required>
+            <button type="submit" class="btn">Restablecer Contraseña</button>
+        </form>
+    </div>
+</div>
+
+<script type="module">
+    // Import the necessary Firebase services
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+    import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+    import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-storage.js";
+
+    // Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyCFfkmEDjqAwJNtnKByRQNt9NUQs5UdNa0",
+      authDomain: "rrhh-ee7e3.firebaseapp.com",
+      projectId: "rrhh-ee7e3",
+      storageBucket: "rrhh-ee7e3.appspot.com",
+      messagingSenderId: "605891607617",
+      appId: "1:605891607617:web:daedbd7b7b7b5a8b901ac0",
+      measurementId: "G-Q801R9M95S"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const storage = getStorage(app);
+
+    // Tab navigation
+    document.querySelectorAll('.tab-link').forEach(button => {
+        button.addEventListener('click', () => {
+            document.querySelectorAll('.tab-link').forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+
+            document.querySelectorAll('.form-container').forEach(form => form.classList.remove('active'));
+            document.getElementById(button.dataset.target).classList.add('active');
+        });
+    });
+
+    // Iniciar Sesión
+    document.getElementById('loginForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const email = document.getElementById('loginEmail').value;
+        const password = document.getElementById('loginPassword').value;
+
+        signInWithEmailAndPassword(auth, email, password)
+            .then((userCredential) => {
+                // Iniciar sesión exitosa
+                window.location.href = "go:Home"; // Redirigir a la página principal
+            })
+            .catch((error) => {
+                console.error(error);
+                alert("Error al iniciar sesión: " + error.message);
+            });
+    });
+
+    // Registrarse
+    document.getElementById('registerForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const name = document.getElementById('registerName').value;
+        const department = document.getElementById('registerDepartment').value;
+        const area = document.getElementById('registerArea').value;
+        const position = document.getElementById('registerPosition').value;
+        const email = document.getElementById('registerEmail').value;
+        const password = document.getElementById('registerPassword').value;
+        const phone = document.getElementById('registerPhone').value;
+        const photoFile = document.getElementById('registerPhoto').files[0];
+
+        createUserWithEmailAndPassword(auth, email, password)
+            .then(async (userCredential) => {
+                const user = userCredential.user;
+                
+                // Subir foto de perfil a Firebase Storage
+                let photoURL = "";
+                if (photoFile) {
+                    const photoRef = ref(storage, 'profiles/' + user.uid + '/' + photoFile.name);
+                    await uploadBytes(photoRef, photoFile);
+                    photoURL = await getDownloadURL(photoRef);
+                }
+
+                // Guardar información adicional en Firestore
+                await setDoc(doc(db, "users", user.uid), {
+                    name: name,
+                    department: department,
+                    area: area,
+                    position: position,
+                    email: email,
+                    phone: phone,
+                    photoURL: photoURL
+                }); 
+
+                alert("Cuenta creada exitosamente.");
+                window.location.href = "go:Home"; // Redirigir a la página principal
+            })
+            .catch((error) => {
+                console.error(error);
+                alert("Error al crear la cuenta: " + error.message);
+            });
+    });
+
+    // Restablecer Contraseña
+    document.getElementById('resetForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const email = document.getElementById('resetEmail').value;
+
+        sendPasswordResetEmail(auth, email)
+            .then(() => {
+                alert("Correo de restablecimiento de contraseña enviado.");
+            })
+            .catch((error) => {
+                console.error(error);
+                alert("Error al enviar el correo de restablecimiento: " + error.message);
+            });
+    });
+</script>
+
+</body>
+</html>
+
+
+
+    <!-- Incluye FontAwesome CDN para los iconos -->
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <script>
+        function goBack() {
+            window.history.back();
+        }
+    </script>
+
+
+
+
+
+
+  <!-- BLOQUEO DE CLIC DERECHO, F12 ETC. -->
+
+  <script>
+        // Bloquear el clic derecho
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+        });
+
+        // Bloquear teclas específicas (F12, Ctrl+Shift+I, Ctrl+U)
+        document.addEventListener('keydown', function(e) {
+            // F12
+            if (e.key === "F12") {
+                e.preventDefault();
+            }
+
+            // Ctrl+Shift+I (inspeccionar)
+            if (e.ctrlKey && e.shiftKey && e.key === 'I') {
+                e.preventDefault();
+            }
+
+            // Ctrl+U (ver código fuente)
+            if (e.ctrlKey && e.key === 'u') {
+                e.preventDefault();
+            }
+
+            // Ctrl+Shift+J (consola)
+            if (e.ctrlKey && e.shiftKey && e.key === 'J') {
+                e.preventDefault();
+            }
+        });
+    </script>
+
+
+
+
+
+<!-- Accesos Directos -->
+
+
+    <script>
+        document.addEventListener('keydown', function(event) {
+            // Ctrl + A: Ir a archivos.html
+            if (event.ctrlKey && event.key === 'a') {
+                event.preventDefault();
+                window.location.href = 'archivos.html';
+            }
+            
+            // Ctrl + N: Ir a Negocio.html
+            if (event.ctrlKey && event.key === 'n') {
+                event.preventDefault();
+                window.location.href = 'Negocio.html';
+            }
+            
+            // Ctrl + P: Ir a Producto.html
+            if (event.ctrlKey && event.key === 'p') {
+                event.preventDefault();
+                window.location.href = 'Producto.html';
+            }
+            
+            // Ctrl + S: Ir a soporte.html
+            if (event.ctrlKey && event.key === 's') {
+                event.preventDefault();
+                window.location.href = 'soporte.html';
+            }
+            
+            // Ctrl + Alt + C: Ir a permisos.html
+            if (event.ctrlKey && event.altKey && event.key === 'c') {
+                event.preventDefault();
+                window.location.href = 'permisos.html';
+            }
+        });
+    </script>

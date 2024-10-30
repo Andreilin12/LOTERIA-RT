@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Visualización de Registros</title>
+  <style>
+    body { font-family: Arial, sans-serif; background-color: #f4f4f9; color: #333; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+    .container { max-width: 800px; background-color: #fff; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); padding: 20px; margin: 20px; }
+    h2 { text-align: center; color: #333; }
+    table { width: 100%; margin-top: 20px; border-collapse: collapse; text-align: left; }
+    table, th, td { border: 1px solid #ddd; }
+    th, td { padding: 12px; }
+    th { background-color: #5a67d8; color: #fff; }
+    .editable { background-color: #edf2f7; cursor: text; transition: background-color 0.3s ease; }
+    .editable:focus { background-color: #e2e8f0; outline: none; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Registros de Consumo</h2>
+    <table id="registroTable">
+      <thead>
+        <tr>
+          <th>Lugar / Apto / Edif.</th>
+          <th>Número de Medidores</th>
+          <th>Número de Contratos</th>
+          <th>Consumo (Editable)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Aquí se mostrarán los registros desde Firebase -->
+      </tbody>
+    </table>
+    <p style="text-align: center; margin-top: 15px;">
+      <a href="formulario.html">Agregar nuevo registro</a> | 
+      <a href="historial.html">Ver historial</a>
+    </p>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+    import { getFirestore, collection, getDocs, doc, updateDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCFfkmEDjqAwJNtnKByRQNt9NUQs5UdNa0",
+      authDomain: "rrhh-ee7e3.firebaseapp.com",
+      projectId: "rrhh-ee7e3",
+      storageBucket: "rrhh-ee7e3.appspot.com",
+      messagingSenderId: "605891607617",
+      appId: "1:605891607617:web:daedbd7b7b7b5a8b901ac0",
+      measurementId: "G-Q801R9M95S"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const registroTableBody = document.querySelector("#registroTable tbody");
+
+    async function cargarRegistros() {
+      registroTableBody.innerHTML = "";
+      const querySnapshot = await getDocs(collection(db, "consumoRondas"));
+      querySnapshot.forEach((docSnapshot) => {
+        const data = docSnapshot.data();
+        const tr = document.createElement("tr");
+        
+        tr.innerHTML = `
+          <td class="editable" contenteditable="true" data-id="${docSnapshot.id}" data-campo="lugar">${data.lugar}</td>
+          <td class="editable" contenteditable="true" data-id="${docSnapshot.id}" data-campo="medidores">${data.medidores}</td>
+          <td class="editable" contenteditable="true" data-id="${docSnapshot.id}" data-campo="contratos">${data.contratos}</td>
+          <td class="editable" contenteditable="true" data-id="${docSnapshot.id}" data-campo="consumo">${data.consumo}</td>
+        `;
+        registroTableBody.appendChild(tr);
+      });
+    }
+
+    registroTableBody.addEventListener("focusout", async (e) => {
+      if (e.target.classList.contains("editable")) {
+        const id = e.target.getAttribute("data-id");
+        const campo = e.target.getAttribute("data-campo"); 
+        const nuevoValor = e.target.textContent;
+
+        const registroRef = doc(db, "consumoRondas", id);
+        const registroDoc = await getDoc(registroRef);
+        const historial = registroDoc.data().historial || []; 
+
+        // Guardar el nuevo valor y actualizar el historial si es el campo de consumo
+        const actualizacion = { [campo]: nuevoValor };
+        if (campo === "consumo") {
+          historial.push({ fecha: new Date().toISOString(), consumo: nuevoValor });
+          actualizacion.historial = historial;
+        }
+
+        await updateDoc(registroRef, actualizacion);
+      }
+    });
+
+    cargarRegistros();
+  </script>
+</body>
+</html>
