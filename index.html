@@ -9,7 +9,7 @@
     <style>
         body {
             font-family: 'Poppins', sans-serif;
-            background-color: #2C3E50;
+            background-color: #f4f4f4;
             color: #333;
             margin: 0;
             padding: 0;
@@ -69,65 +69,31 @@
             width: 100%;
             border: none;
             border-radius: 5px;
-            cursor: pointer; 
+            cursor: pointer;
             margin-top: 20px;
             transition: background-color 0.3s;
         }
         .btn:hover {
             background-color: #0056b3;
         }
-          .back-button {
-    position: fixed;
-    top: 10px; /* Distancia desde la parte superior */
-    left: 10px; /* Distancia desde el borde izquierdo */
-    background-color: #16a085; /* Color de fondo */
-    color: #fff; /* Color del texto y del icono */
-    border: none;
-    border-radius: 4px;
-    padding: 10px 20px;
-    font-size: 16px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    transition: background-color 0.3s; /* Transición suave para el color de fondo */
-    z-index: 1000; /* Asegura que el botón esté sobre otros elementos */
-}
-
-.back-button i {
-    margin-right: 8px; /* Espacio entre el icono y el texto */
-}
-
-.back-button:hover {
-    background-color: #2c2e50; /* Color de fondo al pasar el ratón */
-}
-
-    
-     /* Desactivar la selección de texto y el efecto de arrastre en todos los elementos */
-* {
-  -webkit-user-select: none; /* Safari */
-  -moz-user-select: none; /* Firefox */
-  -ms-user-select: none; /* IE 10+ */
-  user-select: none; /* estándar */
-
-  -webkit-user-drag: none; /* Safari */
-  -khtml-user-drag: none; /* Konqueror HTML */
-  -moz-user-drag: none; /* Firefox */
-  -o-user-drag: none; /* Opera */
-  user-drag: none; /* estándar */
- } 
     </style>
 </head>
 <body>
+
 <div class="login-container">
-
-     <button class="back-button" onclick="goBack()">
-        <i class="fas fa-arrow-left"></i> Volver
-    </button>   
-
     <h2>Bienvenido</h2>
     <div class="nav-tabs">
+        <button class="tab-link active" data-target="login">Iniciar Sesión</button>
         <button class="tab-link" data-target="register">Registrarse</button>
         <button class="tab-link" data-target="reset">Restablecer Contraseña</button>
+    </div>
+
+    <div id="login" class="form-container active">
+        <form id="loginForm">
+            <input type="email" id="loginEmail" placeholder="Correo Electrónico" required>
+            <input type="password" id="loginPassword" placeholder="Contraseña" required>
+            <button type="submit" class="btn">Iniciar Sesión</button>
+        </form>
     </div>
 
     <div id="register" class="form-container">
@@ -161,13 +127,13 @@
 
     // Firebase configuration
     const firebaseConfig = {
-      apiKey: "AIzaSyCFfkmEDjqAwJNtnKByRQNt9NUQs5UdNa0",
-      authDomain: "rrhh-ee7e3.firebaseapp.com",
-      projectId: "rrhh-ee7e3",
-      storageBucket: "rrhh-ee7e3.appspot.com",
-      messagingSenderId: "605891607617",
-      appId: "1:605891607617:web:daedbd7b7b7b5a8b901ac0",
-      measurementId: "G-Q801R9M95S"
+        apiKey: "AIzaSyD7__I68re47rDzJQoIBq3RgR6kc6JVqgg",
+        authDomain: "cctv-1330b.firebaseapp.com",
+        projectId: "cctv-1330b",
+        storageBucket: "cctv-1330b.appspot.com",
+        messagingSenderId: "318283359640",
+        appId: "1:318283359640:web:89232f5261058fe0c8f7ed",
+        measurementId: "G-J642F68GV0"
     };
 
     // Initialize Firebase
@@ -266,91 +232,3 @@
 
 </body>
 </html>
-
-
-
-    <!-- Incluye FontAwesome CDN para los iconos -->
-    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
-    <script>
-        function goBack() {
-            window.history.back();
-        }
-    </script>
-
-
-
-
-
-
-  <!-- BLOQUEO DE CLIC DERECHO, F12 ETC. -->
-
-  <script>
-        // Bloquear el clic derecho
-        document.addEventListener('contextmenu', function(e) {
-            e.preventDefault();
-        });
-
-        // Bloquear teclas específicas (F12, Ctrl+Shift+I, Ctrl+U)
-        document.addEventListener('keydown', function(e) {
-            // F12
-            if (e.key === "F12") {
-                e.preventDefault();
-            }
-
-            // Ctrl+Shift+I (inspeccionar)
-            if (e.ctrlKey && e.shiftKey && e.key === 'I') {
-                e.preventDefault();
-            }
-
-            // Ctrl+U (ver código fuente)
-            if (e.ctrlKey && e.key === 'u') {
-                e.preventDefault();
-            }
-
-            // Ctrl+Shift+J (consola)
-            if (e.ctrlKey && e.shiftKey && e.key === 'J') {
-                e.preventDefault();
-            }
-        });
-    </script>
-
-
-
-
-
-<!-- Accesos Directos -->
-
-
-    <script>
-        document.addEventListener('keydown', function(event) {
-            // Ctrl + A: Ir a archivos.html
-            if (event.ctrlKey && event.key === 'a') {
-                event.preventDefault();
-                window.location.href = 'archivos.html';
-            }
-            
-            // Ctrl + N: Ir a Negocio.html
-            if (event.ctrlKey && event.key === 'n') {
-                event.preventDefault();
-                window.location.href = 'Negocio.html';
-            }
-            
-            // Ctrl + P: Ir a Producto.html
-            if (event.ctrlKey && event.key === 'p') {
-                event.preventDefault();
-                window.location.href = 'Producto.html';
-            }
-            
-            // Ctrl + S: Ir a soporte.html
-            if (event.ctrlKey && event.key === 's') {
-                event.preventDefault();
-                window.location.href = 'soporte.html';
-            }
-            
-            // Ctrl + Alt + C: Ir a permisos.html
-            if (event.ctrlKey && event.altKey && event.key === 'c') {
-                event.preventDefault();
-                window.location.href = 'permisos.html';
-            }
-        });
-    </script>
