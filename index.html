@@ -196,7 +196,7 @@
         signInWithEmailAndPassword(auth, email, password)
             .then((userCredential) => {
                 // Iniciar sesión exitosa
-                window.location.href = "go:Home"; // Redirigir a la página principal
+                window.location.href = "home.html"; // Redirigir a la página principal
             })
             .catch((error) => {
                 console.error(error);
@@ -240,7 +240,7 @@
                 }); 
 
                 alert("Cuenta creada exitosamente.");
-                window.location.href = "go:Home"; // Redirigir a la página principal
+                window.location.href = "home.html"; // Redirigir a la página principal
             })
             .catch((error) => {
                 console.error(error);
