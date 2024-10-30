@@ -1,202 +1,227 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Historial de Modificaciones</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-  <style>
-    body { font-family: Arial, sans-serif; background-color: #f4f4f9; color: #333; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
-    .container { max-width: 800px; background-color: #fff; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); padding: 20px; margin: 20px; }
-    h2 { text-align: center; color: #333; }
-    .accordion { margin-top: 10px; cursor: pointer; background-color: #5a67d8; color: #fff; padding: 12px; text-align: left; border: none; outline: none; transition: 0.4s; border-radius: 5px; width: 100%; }
-    .panel { display: none; padding: 0 18px; background-color: white; overflow: hidden; border: 1px solid #5a67d8; border-radius: 5px; margin-top: 5px; }
-    .table-container { overflow-x: auto; } /* Permitir desplazamiento horizontal */
-    table { width: 100%; border-collapse: collapse; text-align: left; position: relative; }
-    th, td { border: 1px solid #ddd; padding: 8px; text-align: left; position: relative; }
-    th { background-color: #5a67d8; color: #fff; }
-    .resizer { cursor: ew-resize; width: 10px; background-color: transparent; position: absolute; top: 0; right: 0; height: 100%; z-index: 1; }
-    button { cursor: pointer; margin: 5px; padding: 10px; background-color: #5a67d8; color: #fff; border: none; border-radius: 5px; transition: background-color 0.3s; }
-    button:hover { background-color: #4e55b8; }
-    .icon { margin-right: 5px; }
-    .divider-container { display: flex; align-items: center; margin-top: 10px; } /* Contenedor para el divisor */
-    .vertical-divider { border-left: 1px solid #ddd; height: 30px; margin: 0 10px; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Historial de Modificaciones</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 800px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            margin: 20px;
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+        }
+
+        .accordion {
+            margin-top: 10px;
+            cursor: pointer;
+            background-color: #5a67d8;
+            color: #fff;
+            padding: 12px;
+            text-align: left;
+            border: none;
+            outline: none;
+            transition: 0.4s;
+            border-radius: 5px;
+            width: 100%;
+        }
+
+        .panel {
+            display: none;
+            padding: 0 18px;
+            background-color: white;
+            overflow: hidden;
+            border: 1px solid #5a67d8;
+            border-radius: 5px;
+            margin-top: 5px;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        /* Permitir desplazamiento horizontal */
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            position: relative;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+            position: relative;
+        }
+
+        th {
+            background-color: #5a67d8;
+            color: #fff;
+        }
+
+        .resizer {
+            cursor: ew-resize;
+            width: 10px;
+            background-color: transparent;
+            position: absolute;
+            top: 0;
+            right: 0;
+            height: 100%;
+            z-index: 1;
+        }
+
+        button {
+            cursor: pointer;
+            margin: 5px;
+            padding: 10px;
+            background-color: #5a67d8;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #4e55b8;
+        }
+
+        .icon {
+            margin-right: 5px;
+        }
+
+        .divider-container {
+            display: flex;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        /* Contenedor para el divisor */
+
+        .vertical-divider {
+            border-left: 1px solid #ddd;
+            height: 30px;
+            margin: 0 10px;
+        }
+    </style>
 </head>
+
 <body>
-  <div class="container">
-    <h2>Historial de Modificaciones</h2>
-    <div id="accordionContainer">
-      <!-- Sección para carpetas de fechas -->
+    <div class="container">
+        <h2>Historial de Modificaciones</h2>
+        <div id="accordionContainer">
+            <!-- Sección para carpetas de fechas -->
+        </div>
+        <p style="text-align: center; margin-top: 15px;">
+            <a href="visualizacion.html">Volver a Visualización de Registros</a>
+        </p>
     </div>
-    <p style="text-align: center; margin-top: 15px;">
-      <a href="visualizacion.html">Volver a Visualización de Registros</a>
-    </p>
-  </div>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-    import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyCFfkmEDjqAwJNtnKByRQNt9NUQs5UdNa0",
-      authDomain: "rrhh-ee7e3.firebaseapp.com",
-      projectId: "rrhh-ee7e3",
-      storageBucket: "rrhh-ee7e3.appspot.com",
-      messagingSenderId: "605891607617",
-      appId: "1:605891607617:web:daedbd7b7b7b5a8b901ac0",
-      measurementId: "G-Q801R9M95S"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-    const accordionContainer = document.getElementById("accordionContainer");
-
-    async function cargarHistorial() {
-      const querySnapshot = await getDocs(collection(db, "consumoRondas"));
-      const historialPorFecha = {};
-
-      querySnapshot.forEach((docSnapshot) => {
-        const data = docSnapshot.data();
-        const historial = data.historial || [];
-
-        historial.forEach((entry) => {
-          const fecha = new Date(entry.fecha).toLocaleDateString();
-          if (!historialPorFecha[fecha]) historialPorFecha[fecha] = [];
-          historialPorFecha[fecha].push({ ...data, consumo: entry.consumo, fechaModificacion: entry.fecha });
-        });
-      });
-
-      for (const fecha in historialPorFecha) {
-        const button = document.createElement("button");
-        button.classList.add("accordion");
-        button.textContent = `Fecha: ${fecha}`;
-        button.addEventListener("click", () => {
-          const panel = document.getElementById(`panel-${fecha.replace(/\//g, "-")}`);
-          panel.style.display = panel.style.display === "block" ? "none" : "block"; // Toggle display
-        });
-        accordionContainer.appendChild(button);
-
-        // Crear el panel que se abrirá y cerrará
-        const panel = document.createElement("div");
-        panel.classList.add("panel");
-        panel.id = `panel-${fecha.replace(/\//g, "-")}`; // ID único para cada panel
-        panel.innerHTML = `
-          <div class="table-container">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js"; import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js"; const firebaseConfig = { apiKey: "AIzaSyCFfkmEDjqAwJNtnKByRQNt9NUQs5UdNa0",
+        authDomain: "rrhh-ee7e3.firebaseapp.com", projectId: "rrhh-ee7e3", storageBucket: "rrhh-ee7e3.appspot.com", messagingSenderId: "605891607617", appId: "1:605891607617:web:daedbd7b7b7b5a8b901ac0", measurementId: "G-Q801R9M95S" }; const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app); const accordionContainer = document.getElementById("accordionContainer"); async function cargarHistorial() { const querySnapshot = await getDocs(collection(db, "consumoRondas")); const historialPorFecha = {}; querySnapshot.forEach((docSnapshot)
+        => { const data = docSnapshot.data(); const historial = data.historial || []; historial.forEach((entry) => { const fecha = new Date(entry.fecha).toLocaleDateString(); if (!historialPorFecha[fecha]) historialPorFecha[fecha] = []; historialPorFecha[fecha].push({
+        ...data, consumo: entry.consumo, fechaModificacion: entry.fecha }); }); }); for (const fecha in historialPorFecha) { const button = document.createElement("button"); button.classList.add("accordion"); button.textContent = `Fecha: ${fecha}`; button.addEventListener("click",
+        () => { const panel = document.getElementById(`panel-${fecha.replace(/\//g, "-")}`); panel.style.display = panel.style.display === "block" ? "none" : "block"; // Toggle display }); accordionContainer.appendChild(button); // Crear el panel que
+        se abrirá y cerrará const panel = document.createElement("div"); panel.classList.add("panel"); panel.id = `panel-${fecha.replace(/\//g, "-")}`; // ID único para cada panel panel.innerHTML = `
+        <div class="table-container">
             <table>
-              <thead>
-                <tr>
-                  <th>Lugar / Apto / Edif.</th>
-                  <th>Número de Medidores</th>
-                  <th>Número de Contratos</th>
-                  <th>Consumo</th>
-                  <th>Hora de Modificación</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${historialPorFecha[fecha].map(r => `
-                  <tr>
-                    <td>${r.lugar}</td>
-                    <td>${r.medidores}</td>
-                    <td>${r.contratos}</td>
-                    <td>${r.consumo}</td>
-                    <td>${new Date(r.fechaModificacion).toLocaleTimeString()}</td>
-                  </tr>`).join("")}
-              </tbody>
+                <thead>
+                    <tr>
+                        <th>Lugar / Apto / Edif.</th>
+                        <th>Número de Medidores</th>
+                        <th>Número de Contratos</th>
+                        <th>Consumo</th>
+                        <th>Hora de Modificación</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${historialPorFecha[fecha].map(r => `
+                    <tr>
+                        <td>${r.lugar}</td>
+                        <td>${r.medidores}</td>
+                        <td>${r.contratos}</td>
+                        <td>${r.consumo}</td>
+                        <td>${new Date(r.fechaModificacion).toLocaleTimeString()}</td>
+                    </tr>`).join("")}
+                </tbody>
             </table>
-          </div>
-          <div class="divider-container">
-            <button id="excelBtn-${fecha.replace(/\//g, "-")}" onclick="guardarExcel('${fecha.replace(/\//g, "-")}')">
+        </div>
+        <div class="divider-container">
+            <button id="excelBtn-${fecha.replace(/\//g, " - ")}" onclick="guardarExcel('${fecha.replace(/\//g, " - ")}')">
               <i class="fas fa-file-excel icon"></i>Guardar en Excel
             </button>
             <span class="vertical-divider"></span>
-            <button id="printBtn-${fecha.replace(/\//g, "-")}" onclick="imprimir('${fecha.replace(/\//g, "-")}')">
+            <button id="printBtn-${fecha.replace(/\//g, " - ")}" onclick="imprimir('${fecha.replace(/\//g, " - ")}')">
               <i class="fas fa-print icon"></i>Imprimir
             </button>
-          </div>
-        `;
-        accordionContainer.appendChild(panel);
-      }
-
-      agregarResizable();
-    }
-
-    function agregarResizable() {
-      const thElements = document.querySelectorAll("th");
-      thElements.forEach(th => {
-        const resizer = document.createElement("div");
-        resizer.classList.add("resizer");
-        th.appendChild(resizer);
-
-        let startX;
-        let startWidth;
-
-        resizer.addEventListener("mousedown", (e) => {
-          startX = e.clientX; 
-          startWidth = th.offsetWidth;
-
-          document.documentElement.addEventListener("mousemove", mouseMoveHandler);
-          document.documentElement.addEventListener("mouseup", mouseUpHandler);
-        });
-
-        function mouseMoveHandler(e) {
-          const newWidth = startWidth + (e.clientX - startX);
-          th.style.width = `${newWidth}px`;
-        }
-
-        function mouseUpHandler() {
-          document.documentElement.removeEventListener("mousemove", mouseMoveHandler);
-          document.documentElement.removeEventListener("mouseup", mouseUpHandler);
-        }
-      });
-    }
-
-    window.guardarExcel = function(fecha) {
-      const panel = document.getElementById(`panel-${fecha}`);
-      const table = panel.querySelector('table');
-
-      // Extraer datos de la tabla
-      const workbook = XLSX.utils.table_to_book(table);
-      const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-
-      // Agregar la fecha al título de la hoja en una celda
-      const fechaCelda = `A1`;
-      worksheet[fechaCelda] = { v: `Historial de Modificaciones - Fecha: ${fecha}`, t: 's' };
-      XLSX.utils.sheet_add_aoa(worksheet, [[`Historial de Modificaciones - Fecha: ${fecha}`]], { origin: -1 });
-
-      // Guardar el archivo Excel
-      const filename = `historial_${fecha}.xlsx`;
-      XLSX.writeFile(workbook, filename);
-    };
-
-    window.imprimir = function(fecha) {
-      const panel = document.getElementById(`panel-${fecha}`);
-      const table = panel.querySelector('table');
-      const nuevaVentana = window.open('', '_blank');
-      nuevaVentana.document.write(`
+        </div>
+        `; accordionContainer.appendChild(panel); } agregarResizable(); } function agregarResizable() { const thElements = document.querySelectorAll("th"); thElements.forEach(th => { const resizer = document.createElement("div"); resizer.classList.add("resizer");
+        th.appendChild(resizer); let startX; let startWidth; resizer.addEventListener("mousedown", (e) => { startX = e.clientX; startWidth = th.offsetWidth; document.documentElement.addEventListener("mousemove", mouseMoveHandler); document.documentElement.addEventListener("mouseup",
+        mouseUpHandler); }); function mouseMoveHandler(e) { const newWidth = startWidth + (e.clientX - startX); th.style.width = `${newWidth}px`; } function mouseUpHandler() { document.documentElement.removeEventListener("mousemove", mouseMoveHandler);
+        document.documentElement.removeEventListener("mouseup", mouseUpHandler); } }); } window.guardarExcel = function(fecha) { const panel = document.getElementById(`panel-${fecha}`); const table = panel.querySelector('table'); // Extraer datos de la
+        tabla const workbook = XLSX.utils.table_to_book(table); const worksheet = workbook.Sheets[workbook.SheetNames[0]]; // Agregar la fecha al título de la hoja en una celda const fechaCelda = `A1`; worksheet[fechaCelda] = { v: `Historial de Modificaciones
+        - Fecha: ${fecha}`, t: 's' }; XLSX.utils.sheet_add_aoa(worksheet, [[`Historial de Modificaciones - Fecha: ${fecha}`]], { origin: -1 }); // Guardar el archivo Excel const filename = `historial_${fecha}.xlsx`; XLSX.writeFile(workbook, filename);
+        }; window.imprimir = function(fecha) { const panel = document.getElementById(`panel-${fecha}`); const table = panel.querySelector('table'); const nuevaVentana = window.open('', '_blank'); nuevaVentana.document.write(`
         <html>
-          <head>
+
+        <head>
             <title>Imprimir Historial</title>
             <style>
-              body { font-family: Arial, sans-serif; }
-              table { width: 100%; border-collapse: collapse; }
-              th, td { border: 1px solid #ddd; padding: 8px; }
-              th { background-color: #5a67d8; color: white; }
+                body {
+                    font-family: Arial, sans-serif;
+                }
+
+                table {
+                    width: 100%;
+                    border-collapse: collapse;
+                }
+
+                th,
+                td {
+                    border: 1px solid #ddd;
+                    padding: 8px;
+                }
+
+                th {
+                    background-color: #5a67d8;
+                    color: white;
+                }
             </style>
-          </head>
-          <body>
+        </head>
+
+        <body>
             <h2>Historial de Modificaciones - Fecha: ${fecha}</h2>
             ${table.outerHTML}
-          </body>
-        </html>
-      `);
-      nuevaVentana.document.close();
-      nuevaVentana.print();
-    };
+        </body>
 
-    // Cargar el historial al cargar la página
-    cargarHistorial();
-  </script>
+        </html>
+        `); nuevaVentana.document.close(); nuevaVentana.print(); }; // Cargar el historial al cargar la página cargarHistorial();
+    </script>
 </body>
-</html> 
+
+</html>
