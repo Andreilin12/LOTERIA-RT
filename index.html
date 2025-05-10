@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Generadores de Lotería</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary-color: #6a11cb;
+      --secondary-color: #2575fc;
+      --accent-color: #ff5e62;
+      --light-color: #f8f9fa;
+      --dark-color: #343a40;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    body {
+      background-color: #f5f5f5;
+      color: #333;
+      overflow-x: hidden;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .app-header {
+      background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+      color: white;
+      padding: 15px;
+      text-align: center;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      position: relative;
+      z-index: 10;
+    }
+    
+    .app-header h1 {
+      font-size: 1.5rem;
+      font-weight: 600;
+    }
+    
+    .app-content {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    
+    .welcome-card {
+      background: white;
+      border-radius: 15px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+      text-align: center;
+    }
+    
+    .welcome-card h2 {
+      color: var(--primary-color);
+      margin-bottom: 10px;
+    }
+    
+    .generators-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+    }
+    
+    .generator-card {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      color: var(--dark-color);
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+      transition: transform 0.3s, box-shadow 0.3s;
+      height: 100%;
+    }
+    
+    .generator-card:active {
+      transform: scale(0.98);
+      box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
+    }
+    
+    .generator-card i {
+      font-size: 2rem;
+      margin-bottom: 10px;
+      color: var(--primary-color);
+    }
+    
+    .generator-card .title {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 5px;
+      text-align: center;
+    }
+    
+    .generator-card .description {
+      font-size: 0.8rem;
+      color: #666;
+      text-align: center;
+    }
+    
+    .bottom-nav {
+      display: flex;
+      justify-content: space-around;
+      background: white;
+      padding: 10px 0;
+      box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+      position: relative;
+      z-index: 10;
+    }
+    
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-decoration: none;
+      color: #666;
+      font-size: 0.8rem;
+      flex: 1;
+    }
+    
+    .nav-item i {
+      font-size: 1.4rem;
+      margin-bottom: 5px;
+    }
+    
+    .nav-item.active {
+      color: var(--primary-color);
+    }
+    
+    @media (min-width: 768px) {
+      body {
+        max-width: 414px;
+        margin: 0 auto;
+        border: 1px solid #ddd;
+        height: 90vh;
+        margin-top: 5vh;
+        border-radius: 20px;
+        overflow: hidden;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-header">
+    <h1>Generadores de Lotería</h1>
+  </div>
+  
+  <div class="app-content">
+    <div class="welcome-card">
+      <h2>Genera tus números</h2>
+      <p>Selecciona el tipo de lotería</p>
+    </div>
+    
+    <div class="generators-grid">
+      <a href="loto.html" class="generator-card">
+        <i class="fas fa-ticket-alt"></i>
+        <div class="title">Loto</div>
+        <div class="description">6 números + 2 especiales</div>
+      </a>
+      
+      <a href="pale-la-nacional.html" class="generator-card">
+        <i class="fas fa-dice"></i>
+        <div class="title">La Nacional</div>
+        <div class="description">3 números del 1 al 100</div>
+      </a>
+      
+      <a href="quiniela.html" class="generator-card">
+        <i class="fas fa-list-ol"></i>
+        <div class="title">Quiniela</div>
+        <div class="description">4 números del 00 al 99</div>
+      </a>
+      
+      <a href="kino.html" class="generator-card">
+        <i class="fas fa-tv"></i>
+        <div class="title">Kino TV</div>
+        <div class="description">14 números del 1 al 25</div>
+      </a>
+      
+      <a href="pega3.html" class="generator-card">
+        <i class="fas fa-cube"></i>
+        <div class="title">Pega 3</div>
+        <div class="description">3 dígitos del 0 al 9</div>
+      </a>
+      
+      <a href="super6.html" class="generator-card">
+        <i class="fas fa-star"></i>
+        <div class="title">Super 6</div>
+        <div class="description">6 números del 1 al 46</div>
+      </a>
+    </div>
+  </div>
+  
+  <div class="bottom-nav">
+    <a href="index.html" class="nav-item active">
+      <i class="fas fa-home"></i>
+      <span>Inicio</span>
+    </a>
+    
+    <a href="loto-y-kinoTv-generador.html" class="nav-item">
+      <i class="fas fa-random"></i>
+      <span>Generar</span>
+    </a>
+    
+    <a href="favoritos.html" class="nav-item">
+      <i class="fas fa-star"></i>
+      <span>Favoritos</span>
+    </a>
+    
+    <a href="ajustes.html" class="nav-item">
+      <i class="fas fa-cog"></i>
+      <span>Ajustes</span>
+    </a>
+  </div>
+</body>
+</html>
