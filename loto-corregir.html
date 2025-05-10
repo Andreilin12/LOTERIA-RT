@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador de Tickets de Lotería</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <style>
+        :root {
+            --color-primary: #6dd5ed;
+            --color-secondary: #fbc531;
+            --color-danger: #ff4757;
+            --color-success: #2ed573;
+            --color-warning: #eccc68;
+            --color-dark: #1e272e;
+            --color-light: #f5f6fa;
+            --color-gray: #a4b0be;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--color-dark);
+            color: var(--color-light);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            background-color: #2c3e50;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            margin-bottom: 30px;
+            width: 100%;
+            max-width: 800px;
+            text-align: center;
+        }
+        
+        h1, h2 {
+            color: var(--color-primary);
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 30px;
+        }
+        
+        h2 {
+            font-size: 1.6rem;
+            color: var(--color-secondary);
+        }
+        
+        .ticket-container {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .ticket {
+            border: 2px solid #34495e;
+            padding: 25px;
+            border-radius: 10px;
+            background-color: #34495e;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease;
+        }
+        
+        .ticket:hover {
+            transform: translateY(-5px);
+        }
+        
+        .ticket-title {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            color: var(--color-light);
+            font-weight: bold;
+        }
+        
+        .numeros-generados {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+        
+        .numero {
+            background: linear-gradient(135deg, #4bcffa, #0fbcf9);
+            color: #222f3e;
+            font-weight: bold;
+            padding: 12px 18px;
+            border-radius: 8px;
+            font-size: 1.2em;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+            min-width: 45px;
+            text-align: center;
+            transition: transform 0.2s ease;
+        }
+        
+        .numero:hover {
+            transform: scale(1.1);
+        }
+        
+        .loto-numeros {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .loto-numero {
+            background: linear-gradient(135deg, #2ed573, #1dd1a1);
+            color: #222f3e;
+            font-weight: bold;
+            padding: 12px;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2em;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+            transition: transform 0.2s ease;
+        }
+        
+        .loto-numero:hover {
+            transform: scale(1.1);
+        }
+        
+        .extra-numeros {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 25px;
+            flex-wrap: wrap;
+        }
+        
+        .extra-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .extra-label {
+            font-weight: bold;
+            color: var(--color-secondary);
+            font-size: 1.1rem;
+        }
+        
+        .extra-numero {
+            background: linear-gradient(135deg, #fbc531, #f39c12);
+            color: #222f3e;
+            font-weight: bold;
+            padding: 12px 18px;
+            border-radius: 8px;
+            font-size: 1.2em;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+            min-width: 45px;
+            text-align: center;
+        }
+        
+        .super-mas {
+            background: linear-gradient(135deg, #ff4757, #ff6b81);
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, var(--color-primary), #48dbfb);
+            color: #222f3e;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            margin: 10px 5px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .btn:active {
+            transform: translateY(1px);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, var(--color-secondary), #f39c12);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, var(--color-danger), #ff6b81);
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, var(--color-success), #1dd1a1);
+        }
+        
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            overflow: auto;
+            padding: 20px;
+        }
+        
+        .modal-content {
+            background-color: #34495e;
+            margin: auto;
+            padding: 30px;
+            border-radius: 15px;
+            width: 100%;
+            max-width: 300px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            position: relative;
+            animation: modalopen 0.4s;
+        }
+        
+        @keyframes modalopen {
+            from {opacity: 0; transform: translateY(-50px);}
+            to {opacity: 1; transform: translateY(0);}
+        }
+        
+        .close {
+            color: var(--color-gray);
+            position: absolute;
+            top: 15px;
+            right: 25px;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+        
+        .close:hover {
+            color: var(--color-light);
+        }
+        
+        .modal-title {
+            color: var(--color-primary);
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 1.5rem;
+        }
+        
+        .modal-ticket {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            width: 100%;
+            max-width: 300px;
+            color: #222f3e;
+        }
+        
+        .modal-ticket-title {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            color: #222f3e;
+            font-weight: bold;
+            text-align: center;
+        }
+        
+        .modal-numeros {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+            margin-bottom: 15px;
+        }
+        
+        .modal-numero {
+            background: linear-gradient(135deg, #4bcffa, #0fbcf9);
+            color: #222f3e;
+            font-weight: bold;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 1em;
+            min-width: 35px;
+            text-align: center;
+        }
+        
+        .modal-extra {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .modal-extra-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .modal-extra-label {
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+        
+        .modal-extra-numero {
+            background: linear-gradient(135deg, #fbc531, #f39c12);
+            color: #222f3e;
+            font-weight: bold;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 1em;
+            min-width: 30px;
+            text-align: center;
+        }
+        
+        .modal-actions {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .modal-btn {
+            padding: 10px 15px;
+            font-size: 0.9rem;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.2s;
+            flex: 1;
+            min-width: 120px;
+        }
+        
+        .modal-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .btn-print {
+            background: linear-gradient(135deg, #2ed573, #1dd1a1);
+            color: #222f3e;
+        }
+        
+        .btn-download {
+            background: linear-gradient(135deg, #6dd5ed, #48bfe3);
+            color: #222f3e;
+        }
+        
+        .btn-copy {
+            background: linear-gradient(135deg, #a55eea, #8854d0);
+            color: white;
+        }
+        
+        .btn-close {
+            background: linear-gradient(135deg, #ff4757, #ff6b81);
+            color: white;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            h2 {
+                font-size: 1.3rem;
+            }
+            
+            .numero, .loto-numero, .extra-numero {
+                padding: 10px 15px;
+                font-size: 1.1em;
+            }
+            
+            .btn {
+                padding: 12px 20px;
+                font-size: 1em;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .ticket {
+                padding: 15px;
+            }
+            
+            .numeros-generados, .loto-numeros {
+                gap: 8px;
+            }
+            
+            .numero, .loto-numero {
+                padding: 8px 12px;
+                font-size: 1em;
+                min-width: 40px;
+            }
+            
+            .extra-numeros {
+                flex-direction: column;
+                align-items: center;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Generador de Tickets de Lotería</h1>
+
+        <div class="ticket-container">
+            <div>
+                <h2>Ticket de Kino TV</h2>
+                <div class="ticket">
+                    <p class="ticket-title">Números generados (10 números del 1 al 80):</p>
+                    <div id="kino-numeros" class="numeros-generados"></div>
+                </div>
+                <button class="btn" onclick="generarKino()">Generar Kino</button>
+                <button class="btn btn-secondary" onclick="mostrarModal('kino')">Ver Ticket</button>
+            </div>
+
+            <div>
+                <h2>Ticket de Loto</h2>
+                <div class="ticket">
+                    <p class="ticket-title">Números de Loto (6 números del 1 al 38):</p>
+                    <div id="loto-numeros" class="loto-numeros"></div>
+                    <div class="extra-numeros">
+                        <div class="extra-container">
+                            <span class="extra-label">Más (1-10):</span>
+                            <span id="loto-mas" class="extra-numero"></span>
+                        </div>
+                        <div class="extra-container">
+                            <span class="extra-label">Súper Más (1-15):</span>
+                            <span id="loto-super-mas" class="extra-numero super-mas"></span>
+                        </div>
+                    </div>
+                </div>
+                <button class="btn" onclick="generarLoto()">Generar Loto</button>
+                <button class="btn btn-secondary" onclick="mostrarModal('loto')">Ver Ticket</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div id="ticketModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="cerrarModal()">&times;</span>
+            <h3 class="modal-title" id="modalTitle">Ticket de Lotería</h3>
+            
+            <div class="modal-ticket" id="modalTicketContent">
+                <p class="modal-ticket-title" id="modalTicketTitle">Números Generados</p>
+                <div class="modal-numeros" id="modalNumeros"></div>
+                <div class="modal-extra" id="modalExtra"></div>
+            </div>
+            
+            <div class="modal-actions">
+                <button class="modal-btn btn-print" onclick="imprimirTicket()">Imprimir</button>
+                <button class="modal-btn btn-download" onclick="descargarTicket()">Descargar JPG</button>
+                <button class="modal-btn btn-copy" onclick="copiarTicket()">Copiar</button>
+                <button class="modal-btn btn-close" onclick="cerrarModal()">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Variables globales para almacenar los números generados
+        let currentKinoNumbers = [];
+        let currentLotoNumbers = [];
+        let currentLotoMas = 0;
+        let currentLotoSuperMas = 0;
+        let currentModalType = '';
+
+        // Generar números de Kino (10 números únicos entre 1 y 80)
+        function generarKino() {
+            const kinoNumerosDiv = document.getElementById('kino-numeros');
+            kinoNumerosDiv.innerHTML = '';
+            currentKinoNumbers = [];
+            
+            // Generar 10 números únicos para Kino (1-80)
+            while (currentKinoNumbers.length < 10) {
+                const numeroAleatorio = Math.floor(Math.random() * 80) + 1;
+                if (!currentKinoNumbers.includes(numeroAleatorio)) {
+                    currentKinoNumbers.push(numeroAleatorio);
+                }
+            }
+            
+            // Ordenar y mostrar
+            currentKinoNumbers.sort((a, b) => a - b);
+            currentKinoNumbers.forEach(numero => {
+                const span = document.createElement('span');
+                span.classList.add('numero');
+                span.textContent = numero;
+                kinoNumerosDiv.appendChild(span);
+            });
+        }
+
+        // Generar números de Loto (6 números únicos entre 1 y 38)
+        function generarLoto() {
+            const lotoNumerosDiv = document.getElementById('loto-numeros');
+            const lotoMasSpan = document.getElementById('loto-mas');
+            const lotoSuperMasSpan = document.getElementById('loto-super-mas');
+
+            lotoNumerosDiv.innerHTML = '';
+            currentLotoNumbers = [];
+            
+            // Generar 6 números únicos para Loto (1-38)
+            while (currentLotoNumbers.length < 6) {
+                const numeroAleatorio = Math.floor(Math.random() * 38) + 1;
+                if (!currentLotoNumbers.includes(numeroAleatorio)) {
+                    currentLotoNumbers.push(numeroAleatorio);
+                }
+            }
+            
+            // Ordenar y mostrar
+            currentLotoNumbers.sort((a, b) => a - b);
+            currentLotoNumbers.forEach(numero => {
+                const span = document.createElement('span');
+                span.classList.add('loto-numero');
+                span.textContent = numero;
+                lotoNumerosDiv.appendChild(span);
+            });
+
+            // Generar Más (1-10) y Súper Más (1-15)
+            currentLotoMas = Math.floor(Math.random() * 10) + 1;
+            currentLotoSuperMas = Math.floor(Math.random() * 15) + 1;
+            
+            lotoMasSpan.textContent = currentLotoMas;
+            lotoSuperMasSpan.textContent = currentLotoSuperMas;
+        }
+
+        // Mostrar modal con el ticket
+        function mostrarModal(type) {
+            currentModalType = type;
+            const modal = document.getElementById('ticketModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalTicketTitle = document.getElementById('modalTicketTitle');
+            const modalNumeros = document.getElementById('modalNumeros');
+            const modalExtra = document.getElementById('modalExtra');
+            
+            modalNumeros.innerHTML = '';
+            modalExtra.innerHTML = '';
+            
+            if (type === 'kino') {
+                modalTitle.textContent = 'Ticket de Kino TV';
+                modalTicketTitle.textContent = 'Números de Kino (10 números del 1 al 80)';
+                
+                currentKinoNumbers.forEach(numero => {
+                    const numSpan = document.createElement('span');
+                    numSpan.classList.add('modal-numero');
+                    numSpan.textContent = numero;
+                    modalNumeros.appendChild(numSpan);
+                });
+            } else if (type === 'loto') {
+                modalTitle.textContent = 'Ticket de Loto';
+                modalTicketTitle.textContent = 'Números de Loto (6 números del 1 al 38)';
+                
+                currentLotoNumbers.forEach(numero => {
+                    const numSpan = document.createElement('span');
+                    numSpan.classList.add('modal-numero');
+                    numSpan.style.background = 'linear-gradient(135deg, #2ed573, #1dd1a1)';
+                    numSpan.textContent = numero;
+                    modalNumeros.appendChild(numSpan);
+                });
+                
+                // Agregar Más y Súper Más
+                const masDiv = document.createElement('div');
+                masDiv.classList.add('modal-extra-item');
+                masDiv.innerHTML = `
+                    <span class="modal-extra-label">Más (1-10):</span>
+                    <span class="modal-extra-numero">${currentLotoMas}</span>
+                `;
+                
+                const superMasDiv = document.createElement('div');
+                superMasDiv.classList.add('modal-extra-item');
+                superMasDiv.innerHTML = `
+                    <span class="modal-extra-label">Súper Más (1-15):</span>
+                    <span class="modal-extra-numero super-mas">${currentLotoSuperMas}</span>
+                `;
+                
+                modalExtra.appendChild(masDiv);
+                modalExtra.appendChild(superMasDiv);
+            }
+            
+            modal.style.display = 'flex';
+        }
+
+        // Cerrar modal
+        function cerrarModal() {
+            document.getElementById('ticketModal').style.display = 'none';
+        }
+
+        // Imprimir ticket
+        function imprimirTicket() {
+            const modalContent = document.getElementById('modalTicketContent');
+            const printWindow = window.open('', '', 'width=300,height=500');
+            printWindow.document.write(`
+                <html>
+                    <head>
+                        <title>Ticket de Lotería</title>
+                        <style>
+                            body { 
+                                font-family: Arial, sans-serif; 
+                                padding: 20px; 
+                                text-align: center;
+                            }
+                            .ticket-title {
+                                font-size: 1.2rem;
+                                margin-bottom: 15px;
+                                font-weight: bold;
+                            }
+                            .numeros-container {
+                                display: flex;
+                                flex-wrap: wrap;
+                                gap: 8px;
+                                justify-content: center;
+                                margin-bottom: 15px;
+                            }
+                            .numero {
+                                background-color: #4bcffa;
+                                color: #222f3e;
+                                font-weight: bold;
+                                padding: 8px 12px;
+                                border-radius: 6px;
+                                font-size: 1em;
+                                min-width: 35px;
+                                text-align: center;
+                            }
+                            .extra-container {
+                                display: flex;
+                                justify-content: center;
+                                gap: 15px;
+                                margin-top: 15px;
+                            }
+                            .extra-item {
+                                display: flex;
+                                align-items: center;
+                                gap: 5px;
+                            }
+                            .extra-label {
+                                font-weight: bold;
+                                font-size: 0.9rem;
+                            }
+                            .extra-numero {
+                                background-color: #fbc531;
+                                color: #222f3e;
+                                font-weight: bold;
+                                padding: 6px 10px;
+                                border-radius: 6px;
+                                font-size: 1em;
+                                min-width: 30px;
+                                text-align: center;
+                            }
+                            .super-mas {
+                                background-color: #ff4757;
+                                color: white;
+                            }
+                        </style>
+                    </head>
+                    <body>
+                        ${modalContent.outerHTML}
+                        <script>
+                            window.onload = function() {
+                                window.print();
+                                setTimeout(function() {
+                                    window.close();
+                                }, 100);
+                            };
+                        <\/script>
+                    </body>
+                </html>
+            `);
+            printWindow.document.close();
+        }
+
+        // Descargar ticket como JPG
+        function descargarTicket() {
+            const modalTicketContent = document.getElementById('modalTicketContent');
+            
+            html2canvas(modalTicketContent, {
+                backgroundColor: '#ffffff',
+                scale: 2 // Mejor calidad
+            }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = `ticket-loteria-${currentModalType}-${new Date().toISOString().slice(0,10)}.jpg`;
+                link.href = canvas.toDataURL('image/jpeg', 0.9);
+                link.click();
+            });
+        }
+
+        // Copiar ticket al portapapeles
+        function copiarTicket() {
+            const modalTicketContent = document.getElementById('modalTicketContent');
+            let textToCopy = `Ticket de ${currentModalType === 'kino' ? 'Kino TV' : 'Loto'}:\n\n` +
+                            `Números: ${currentModalType === 'kino' ? currentKinoNumbers.join(', ') : currentLotoNumbers.join(', ')}\n`;
+            
+            if (currentModalType === 'loto') {
+                textToCopy += `Más: ${currentLotoMas}\n` +
+                             `Súper Más: ${currentLotoSuperMas}\n`;
+            }
+            
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                alert('Ticket copiado al portapapeles!');
+            }).catch(err => {
+                console.error('Error al copiar: ', err);
+                // Fallback para navegadores antiguos
+                const textarea = document.createElement('textarea');
+                textarea.value = textToCopy;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                alert('Ticket copiado al portapapeles!');
+            });
+        }
+
+        // Generar tickets al cargar la página
+        window.onload = function() {
+            generarKino();
+            generarLoto();
+            
+            // Cerrar modal al hacer clic fuera del contenido
+            window.addEventListener('click', function(event) {
+                const modal = document.getElementById('ticketModal');
+                if (event.target === modal) {
+                    cerrarModal();
+                }
+            });
+        };
+    </script>
+
+</body>
+</html>
