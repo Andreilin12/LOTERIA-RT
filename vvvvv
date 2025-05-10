@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Kino TV App</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --background: #0f172a;
+      --card-bg: #1e293b;
+      --text: #f8fafc;
+      --accent: #f59e0b;
+      --success: #10b981;
+      --error: #ef4444;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+    
+    body {
+      font-family: 'Roboto', sans-serif;
+      background-color: var(--background);
+      color: var(--text);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    
+    /* Header estilo app */
+    .app-header {
+      background-color: var(--primary);
+      color: white;
+      padding: 15px 20px;
+      text-align: center;
+      position: relative;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+      z-index: 10;
+    }
+    
+    .app-header h1 {
+      font-size: 1.3rem;
+      font-weight: 500;
+    }
+    
+    /* Contenido principal */
+    .app-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+      -webkit-overflow-scrolling: touch;
+    }
+    
+    /* Tarjeta de generador */
+    .generator-card {
+      background-color: var(--card-bg);
+      border-radius: 16px;
+      padding: 25px;
+      margin-bottom: 25px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    .card-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    
+    .card-title i {
+      font-size: 1.5rem;
+      color: var(--accent);
+    }
+    
+    .card-title h2 {
+      font-size: 1.2rem;
+      font-weight: 500;
+    }
+    
+    /* Números generados */
+    .numbers-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+      margin: 20px 0;
+    }
+    
+    .number {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white;
+      font-weight: bold;
+      width: 100%;
+      aspect-ratio: 1/1;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
+    }
+    
+    /* Botones */
+    .btn {
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      padding: 14px 20px;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: 500;
+      width: 100%;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    
+    .btn:active {
+      transform: scale(0.98);
+      background-color: var(--primary-dark);
+    }
+    
+    .btn-secondary {
+      background-color: var(--card-bg);
+      border: 1px solid #334155;
+    }
+    
+    .btn-success {
+      background-color: var(--success);
+    }
+    
+    /* Modal */
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.8);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 100;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s;
+    }
+    
+    .modal.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+    
+    .modal-content {
+      background-color: var(--card-bg);
+      width: 90%;
+      max-width: 350px;
+      border-radius: 16px;
+      overflow: hidden;
+      transform: translateY(20px);
+      transition: transform 0.3s;
+    }
+    
+    .modal.active .modal-content {
+      transform: translateY(0);
+    }
+    
+    .modal-header {
+      background-color: var(--primary);
+      padding: 15px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .modal-header h3 {
+      font-size: 1.1rem;
+      font-weight: 500;
+    }
+    
+    .modal-body {
+      padding: 20px;
+    }
+    
+    .ticket-info {
+      background-color: #0f172a;
+      border-radius: 10px;
+      padding: 15px;
+      margin-bottom: 20px;
+      font-family: 'Courier New', monospace;
+    }
+    
+    .ticket-info p {
+      margin-bottom: 8px;
+    }
+    
+    .modal-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    
+    /* Toast notifications */
+    .toast {
+      position: fixed;
+      bottom: 80px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: var(--success);
+      color: white;
+      padding: 12px 24px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      z-index: 1000;
+      opacity: 0;
+      transition: opacity 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .toast.show {
+      opacity: 1;
+    }
+    
+    .toast.error {
+      background-color: var(--error);
+    }
+    
+    /* Bottom navigation */
+    .bottom-nav {
+      display: flex;
+      background-color: var(--card-bg);
+      border-top: 1px solid #334155;
+    }
+    
+    .nav-item {
+      flex: 1;
+      padding: 12px 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #94a3b8;
+      text-decoration: none;
+      font-size: 0.8rem;
+    }
+    
+    .nav-item.active {
+      color: var(--primary);
+    }
+    
+    .nav-item i {
+      font-size: 1.4rem;
+      margin-bottom: 4px;
+    }
+    
+    /* Efectos de carga y animaciones */
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    .fade-in {
+      animation: fadeIn 0.3s ease-out;
+    }
+    
+    /* Ajustes para móviles pequeños */
+    @media (max-width: 400px) {
+      .numbers-grid {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Header de la app -->
+  <header class="app-header">
+    <h1>Generador Kino TV</h1>
+  </header>
+  
+  <!-- Contenido principal -->
+  <main class="app-content">
+    <div class="generator-card fade-in">
+      <div class="card-title">
+        <i class="fas fa-tv"></i>
+        <h2>Mis números Kino</h2>
+      </div>
+      
+      <p>Selección de 10 números entre 1 y 80</p>
+      
+      <div class="numbers-grid" id="numbers-container">
+        <!-- Los números se generarán aquí -->
+      </div>
+      
+      <button class="btn" onclick="generateNumbers()">
+        <i class="fas fa-redo"></i> Generar nuevos
+      </button>
+    </div>
+    
+    <button class="btn btn-secondary" onclick="openModal()">
+      <i class="fas fa-ticket-alt"></i> Ver ticket
+    </button>
+  </main>
+  
+  <!-- Navegación inferior -->
+  <nav class="bottom-nav">
+    <a href="#" class="nav-item active">
+      <i class="fas fa-home"></i>
+      <span>Inicio</span>
+    </a>
+    <a href="#" class="nav-item">
+      <i class="fas fa-history"></i>
+      <span>Historial</span>
+    </a>
+    <a href="#" class="nav-item">
+      <i class="fas fa-star"></i>
+      <span>Favoritos</span>
+    </a>
+    <a href="#" class="nav-item">
+      <i class="fas fa-cog"></i>
+      <span>Ajustes</span>
+    </a>
+  </nav>
+  
+  <!-- Modal del ticket -->
+  <div class="modal" id="ticketModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Ticket Kino TV</h3>
+        <i class="fas fa-times" onclick="closeModal()" style="cursor: pointer;"></i>
+      </div>
+      <div class="modal-body">
+        <div class="ticket-info">
+          <p><strong>Números:</strong> <span id="modal-numbers"></span></p>
+          <p><strong>Generado:</strong> <span id="modal-date"></span></p>
+        </div>
+        
+        <div class="modal-actions">
+          <button class="btn" onclick="copyTicket()">
+            <i class="fas fa-copy"></i> Copiar
+          </button>
+          <button class="btn btn-success" onclick="saveTicketAsImage()">
+            <i class="fas fa-download"></i> Descargar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast notification -->
+  <div class="toast" id="toast">
+    <i class="fas fa-check-circle"></i>
+    <span id="toast-message">Operación exitosa</span>
+  </div>
+
+  <script>
+    // Variables globales
+    let currentNumbers = [];
+    const numbersContainer = document.getElementById('numbers-container');
+    const modalNumbers = document.getElementById('modal-numbers');
+    const modalDate = document.getElementById('modal-date');
+    const ticketModal = document.getElementById('ticketModal');
+    const toast = document.getElementById('toast');
+    const toastMessage = document.getElementById('toast-message');
+    
+    // Generar números iniciales
+    generateNumbers();
+    
+    // Función para generar números aleatorios
+    function generateNumbers() {
+      currentNumbers = [];
+      numbersContainer.innerHTML = '';
+      
+      // Generar 10 números únicos entre 1 y 80
+      while (currentNumbers.length < 10) {
+        const num = Math.floor(Math.random() * 80) + 1;
+        if (!currentNumbers.includes(num)) {
+          currentNumbers.push(num);
+        }
+      }
+      
+      // Ordenar números
+      currentNumbers.sort((a, b) => a - b);
+      
+      // Mostrar números en la UI
+      currentNumbers.forEach(num => {
+        const numberElement = document.createElement('div');
+        numberElement.className = 'number';
+        numberElement.textContent = num;
+        numbersContainer.appendChild(numberElement);
+      });
+      
+      // Efecto visual
+      numbersContainer.classList.remove('fade-in');
+      setTimeout(() => numbersContainer.classList.add('fade-in'), 10);
+    }
+    
+    // Función para abrir el modal
+    function openModal() {
+      if (currentNumbers.length === 0) {
+        showToast('Primero genera números', true);
+        return;
+      }
+      
+      // Actualizar contenido del modal
+      modalNumbers.textContent = currentNumbers.join(', ');
+      
+      const now = new Date();
+      const options = { 
+        day: '2-digit', 
+        month: '2-digit', 
+        year: 'numeric', 
+        hour: '2-digit', 
+        minute: '2-digit' 
+      };
+      modalDate.textContent = now.toLocaleDateString('es-ES', options);
+      
+      // Mostrar modal
+      ticketModal.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+    
+    // Función para cerrar el modal
+    function closeModal() {
+      ticketModal.classList.remove('active');
+      document.body.style.overflow = 'auto';
+    }
+    
+    // Función para mostrar notificaciones toast
+    function showToast(message, isError = false) {
+      toastMessage.textContent = message;
+      toast.classList.remove('error');
+      
+      if (isError) {
+        toast.classList.add('error');
+        toast.querySelector('i').className = 'fas fa-exclamation-circle';
+      } else {
+        toast.querySelector('i').className = 'fas fa-check-circle';
+      }
+      
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 3000);
+    }
+    
+    // Función para copiar el ticket al portapapeles
+    function copyTicket() {
+      const ticketText = `Kino TV\nNúmeros: ${currentNumbers.join(', ')}\nGenerado: ${modalDate.textContent}`;
+      
+      navigator.clipboard.writeText(ticketText)
+        .then(() => {
+          showToast('Copiado al portapapeles');
+          closeModal();
+        })
+        .catch(err => {
+          console.error('Error al copiar: ', err);
+          showToast('Error al copiar', true);
+        });
+    }
+    
+    // Función para descargar el ticket como imagen
+    function saveTicketAsImage() {
+      // Crear el contenido del ticket para la imagen
+      const ticketContent = `
+        <div style="background: white; padding: 20px; border-radius: 10px; width: 300px; font-family: Arial, sans-serif;">
+          <h2 style="color: #2563eb; text-align: center; margin-bottom: 15px;">Ticket Kino TV</h2>
+          <div style="margin-bottom: 15px;">
+            <p style="font-weight: bold; margin-bottom: 5px;">Números:</p>
+            <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px;">
+              ${currentNumbers.map(num => `
+                <div style="
+                  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+                  color: white;
+                  width: 36px;
+                  height: 36px;
+                  border-radius: 50%;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  font-weight: bold;
+                ">${num}</div>
+              `).join('')}
+            </div>
+            <p style="font-weight: bold;">Generado: <span style="font-weight: normal;">${modalDate.textContent}</span></p>
+          </div>
+          <p style="text-align: center; color: #666; font-size: 12px;">www.kinoapp.com</p>
+        </div>
+      `;
+      
+      // Crear un elemento temporal para renderizar el ticket
+      const tempDiv = document.createElement('div');
+      tempDiv.style.position = 'absolute';
+      tempDiv.style.left = '-9999px';
+      tempDiv.innerHTML = ticketContent;
+      document.body.appendChild(tempDiv);
+      
+      // Usar html2canvas para convertir a imagen
+      html2canvas(tempDiv.firstChild).then(canvas => {
+        // Crear enlace de descarga
+        const link = document.createElement('a');
+        link.download = `ticket-kino-${new Date().toISOString().slice(0, 10)}.png`;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+        
+        // Mostrar notificación
+        showToast('Ticket descargado');
+        closeModal();
+        
+        // Limpiar
+        document.body.removeChild(tempDiv);
+      }).catch(err => {
+        console.error('Error al generar imagen:', err);
+        showToast('Error al descargar', true);
+        document.body.removeChild(tempDiv);
+      });
+    }
+    
+    // Cerrar modal al hacer clic fuera del contenido
+    ticketModal.addEventListener('click', (e) => {
+      if (e.target === ticketModal) {
+        closeModal();
+      }
+    });
+  </script>
+  
+  <!-- Librería para convertir HTML a imagen -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+</body>
+</html>
