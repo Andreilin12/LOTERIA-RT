@@ -1,0 +1,1076 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Generador Kino TV</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --background: #0f172a;
+      --card-bg: #1e293b;
+      --text: #f8fafc;
+      --accent: #f59e0b;
+      --success: #10b981;
+      --error: #ef4444;
+      --warning: #f59e0b;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+    
+    body {
+      font-family: 'Roboto', sans-serif;
+      background-color: var(--background);
+      color: var(--text);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    
+    .app-header {
+      background-color: var(--primary);
+      color: white;
+      padding: 15px 20px;
+      text-align: center;
+      position: relative;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+      z-index: 100;
+    }
+    
+    .app-header h1 {
+      font-size: 1.3rem;
+      font-weight: 500;
+    }
+    
+    .app-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+      -webkit-overflow-scrolling: touch;
+      padding-bottom: 70px;
+    }
+    
+    .generator-card {
+      background-color: var(--card-bg);
+      border-radius: 16px;
+      padding: 25px;
+      margin-bottom: 25px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    .card-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    
+    .card-title i {
+      font-size: 1.5rem;
+      color: var(--accent);
+    }
+    
+    .card-title h2 {
+      font-size: 1.2rem;
+      font-weight: 500;
+    }
+    
+    .numbers-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+      margin: 20px 0;
+    }
+    
+    .number {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white;
+      font-weight: bold;
+      width: 100%;
+      aspect-ratio: 1/1;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
+    }
+    
+    .btn {
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      padding: 14px 20px;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: 500;
+      width: 100%;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    
+    .btn:active {
+      transform: scale(0.98);
+      background-color: var(--primary-dark);
+    }
+    
+    .btn-secondary {
+      background-color: var(--card-bg);
+      border: 1px solid #334155;
+    }
+    
+    .btn-success {
+      background-color: var(--success);
+    }
+    
+    .btn-warning {
+      background-color: var(--warning);
+    }
+    
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.8);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+    
+    .modal.active {
+      display: flex;
+    }
+    
+    .modal-content {
+      background-color: var(--card-bg);
+      width: 90%;
+      max-width: 350px;
+      border-radius: 16px;
+      overflow: hidden;
+    }
+    
+    .modal-header {
+      background-color: var(--primary);
+      padding: 15px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .modal-header h3 {
+      font-size: 1.1rem;
+      font-weight: 500;
+    }
+    
+    .modal-body {
+      padding: 20px;
+    }
+    
+    .ticket-info {
+      background-color: #0f172a;
+      border-radius: 10px;
+      padding: 15px;
+      margin-bottom: 20px;
+      font-family: 'Courier New', monospace;
+    }
+    
+    .ticket-info p {
+      margin-bottom: 8px;
+    }
+    
+    .modal-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    
+    .bottom-nav {
+      display: flex;
+      background-color: var(--card-bg);
+      border-top: 1px solid #334155;
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      z-index: 100;
+    }
+    
+    .nav-item {
+      flex: 1;
+      padding: 12px 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #94a3b8;
+      text-decoration: none;
+      font-size: 0.8rem;
+    }
+    
+    .nav-item.active {
+      color: var(--primary);
+    }
+    
+    .nav-item i {
+      font-size: 1.4rem;
+      margin-bottom: 4px;
+    }
+    
+    /* Notificaciones elegantes */
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: var(--success);
+      color: white;
+      padding: 12px 24px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      z-index: 1100;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    
+    .toast.show {
+      opacity: 1;
+    }
+    
+    .toast.error {
+      background-color: var(--error);
+    }
+    
+    .toast.warning {
+      background-color: var(--warning);
+    }
+    
+    /* Nuevos estilos para historial y favoritos */
+    .history-item, .favorite-item {
+      background-color: var(--card-bg);
+      border-radius: 12px;
+      padding: 15px;
+      margin-bottom: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-left: 4px solid var(--primary);
+    }
+    
+    .history-numbers, .favorite-numbers {
+      font-weight: bold;
+      flex: 1;
+    }
+    
+    .history-date, .favorite-date {
+      font-size: 0.8rem;
+      color: #94a3b8;
+      margin-top: 5px;
+    }
+    
+    .history-actions, .favorite-actions {
+      display: flex;
+      gap: 10px;
+      margin-left: 15px;
+    }
+    
+    .action-btn {
+      background: none;
+      border: none;
+      color: #94a3b8;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .action-btn:hover {
+      color: var(--primary);
+    }
+    
+    .favorite-btn {
+      color: var(--accent);
+    }
+    
+    .section {
+      display: none;
+    }
+    
+    .section.active {
+      display: block;
+    }
+    
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: #94a3b8;
+    }
+    
+    .empty-state i {
+      font-size: 2.5rem;
+      margin-bottom: 15px;
+      color: #334155;
+    }
+    
+    .confirm-modal {
+      text-align: center;
+    }
+    
+    .confirm-modal p {
+      margin-bottom: 20px;
+    }
+    
+    .confirm-actions {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+    }
+
+    @media (max-width: 400px) {
+      .numbers-grid {
+        grid-template-columns: repeat(4, 1fr);
+      }
+      
+      .modal-actions {
+        grid-template-columns: 1fr;
+      }
+      
+      .history-item, .favorite-item {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      
+      .history-actions, .favorite-actions {
+        margin-left: 0;
+        margin-top: 10px;
+        width: 100%;
+        justify-content: flex-end;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="app-header">
+    <h1 id="page-title">Generador Kino TV</h1>
+  </header>
+  
+  <main class="app-content">
+    <!-- Sección de generador -->
+    <div class="section active" id="generator-section">
+      <div class="generator-card">
+        <div class="card-title">
+          <i class="fas fa-tv"></i>
+          <h2>Mis números Kino</h2>
+        </div>
+        
+        <p>Selección de 10 números entre 1 y 80</p>
+        
+        <div class="numbers-grid" id="numbers-container"></div>
+        
+        <button class="btn" id="generate-btn">
+          <i class="fas fa-redo"></i> Generar nuevos
+        </button>
+      </div>
+      
+      <button class="btn btn-secondary" id="ticket-btn">
+        <i class="fas fa-ticket-alt"></i> Ver ticket
+      </button>
+      
+      <button class="btn btn-success" id="save-history-btn" style="margin-top: 15px;">
+        <i class="fas fa-save"></i> Guardar en historial
+      </button>
+    </div>
+    
+    <!-- Sección de historial -->
+    <div class="section" id="history-section">
+      <div class="generator-card">
+        <div class="card-title">
+          <i class="fas fa-history"></i>
+          <h2>Historial de Números</h2>
+        </div>
+        
+        <div id="history-list">
+          <!-- Aquí se cargarán los elementos del historial -->
+          <div class="empty-state">
+            <i class="fas fa-history"></i>
+            <h3>No hay números en tu historial</h3>
+            <p>Genera números y guárdalos para verlos aquí</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Sección de favoritos -->
+    <div class="section" id="favorites-section">
+      <div class="generator-card">
+        <div class="card-title">
+          <i class="fas fa-star"></i>
+          <h2>Números Favoritos</h2>
+        </div>
+        
+        <div id="favorites-list">
+          <!-- Aquí se cargarán los elementos favoritos -->
+          <div class="empty-state">
+            <i class="fas fa-star"></i>
+            <h3>No tienes números favoritos</h3>
+            <p>Marca números como favoritos para verlos aquí</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+  
+  <nav class="bottom-nav">
+    <a href="#" class="nav-item active" data-section="generator-section">
+      <i class="fas fa-home"></i>
+      <span>Inicio</span>
+    </a>
+    <a href="#" class="nav-item" data-section="history-section">
+      <i class="fas fa-history"></i>
+      <span>Historial</span>
+    </a>
+    <a href="#" class="nav-item" data-section="favorites-section">
+      <i class="fas fa-star"></i>
+      <span>Favoritos</span>
+    </a>
+    <a href="#" class="nav-item" id="logout-btn">
+      <i class="fas fa-sign-out-alt"></i>
+      <span>Salir</span>
+    </a>
+  </nav>
+  
+  <!-- Modal para ticket -->
+  <div class="modal" id="ticketModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Ticket Kino TV</h3>
+        <i class="fas fa-times" id="close-modal" style="cursor: pointer;"></i>
+      </div>
+      <div class="modal-body">
+        <div class="ticket-info" id="printable-content">
+          <p><strong>Números:</strong> <span id="modal-numbers"></span></p>
+          <p><strong>Generado:</strong> <span id="modal-date"></span></p>
+        </div>
+        
+        <div class="modal-actions">
+          <button class="btn" id="copy-btn">
+            <i class="fas fa-copy"></i> Copiar
+          </button>
+          <button class="btn btn-success" id="download-btn">
+            <i class="fas fa-download"></i> Descargar JPG
+          </button>
+        </div>
+        
+        <div class="modal-actions">
+          <button class="btn btn-warning" id="print-btn">
+            <i class="fas fa-print"></i> Imprimir
+          </button>
+          <button class="btn btn-secondary" id="share-btn">
+            <i class="fas fa-share-alt"></i> Compartir
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal de confirmación -->
+  <div class="modal" id="confirmModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="confirm-title">Confirmar acción</h3>
+        <i class="fas fa-times" id="close-confirm-modal" style="cursor: pointer;"></i>
+      </div>
+      <div class="modal-body confirm-modal">
+        <p id="confirm-message">¿Estás seguro de que deseas realizar esta acción?</p>
+        <div class="confirm-actions">
+          <button class="btn btn-secondary" id="cancel-confirm">Cancelar</button>
+          <button class="btn" id="confirm-action">Confirmar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notificación toast -->
+  <div class="toast" id="toast-notification">
+    <i class="fas fa-check-circle"></i>
+    <span id="toast-message">Mensaje</span>
+  </div>
+
+  <!-- Cargamos las librerías necesarias -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script type="module">
+    // Importaciones de Firebase
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+    import { 
+      getAuth, 
+      onAuthStateChanged, 
+      signOut 
+    } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+    import { 
+      getFirestore, 
+      collection, 
+      addDoc, 
+      query, 
+      where, 
+      getDocs, 
+      doc, 
+      updateDoc, 
+      deleteDoc,
+      serverTimestamp 
+    } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+
+    // Configuración de Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyDLi-egzQlgbKW8XV_qIhU6313Gd8gocCg",
+      authDomain: "inventario-35d6b.firebaseapp.com",
+      databaseURL: "https://inventario-35d6b-default-rtdb.firebaseio.com",
+      projectId: "inventario-35d6b",
+      storageBucket: "inventario-35d6b.appspot.com",
+      messagingSenderId: "266100399659",
+      appId: "1:266100399659:web:92358d28cbd803c8a7d46e"
+    };
+
+    // Inicializar Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    // Variables globales
+    let currentUser = null;
+    let currentNumbers = [];
+    let currentAction = null;
+    let currentItemId = null;
+    
+    // Elementos del DOM
+    const numbersContainer = document.getElementById('numbers-container');
+    const generateBtn = document.getElementById('generate-btn');
+    const ticketBtn = document.getElementById('ticket-btn');
+    const saveHistoryBtn = document.getElementById('save-history-btn');
+    const modalNumbers = document.getElementById('modal-numbers');
+    const modalDate = document.getElementById('modal-date');
+    const ticketModal = document.getElementById('ticketModal');
+    const closeModalBtn = document.getElementById('close-modal');
+    const copyBtn = document.getElementById('copy-btn');
+    const downloadBtn = document.getElementById('download-btn');
+    const printBtn = document.getElementById('print-btn');
+    const shareBtn = document.getElementById('share-btn');
+    const toast = document.getElementById('toast-notification');
+    const toastMessage = document.getElementById('toast-message');
+    const historyList = document.getElementById('history-list');
+    const favoritesList = document.getElementById('favorites-list');
+    const confirmModal = document.getElementById('confirmModal');
+    const confirmTitle = document.getElementById('confirm-title');
+    const confirmMessage = document.getElementById('confirm-message');
+    const confirmActionBtn = document.getElementById('confirm-action');
+    const cancelConfirmBtn = document.getElementById('cancel-confirm');
+    const closeConfirmModal = document.getElementById('close-confirm-modal');
+    const logoutBtn = document.getElementById('logout-btn');
+    const pageTitle = document.getElementById('page-title');
+    
+    // Navegación entre secciones
+    const navItems = document.querySelectorAll('.nav-item');
+    const sections = document.querySelectorAll('.section');
+    
+    // Verificar autenticación al cargar la página
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        currentUser = user;
+        loadHistory();
+        loadFavorites();
+      } else {
+        // Redirigir si no está autenticado
+        window.location.href = "index.html";
+      }
+    });
+    
+    // Event listeners
+    generateBtn.addEventListener('click', generateNumbers);
+    ticketBtn.addEventListener('click', openModal);
+    closeModalBtn.addEventListener('click', closeModal);
+    copyBtn.addEventListener('click', copyTicket);
+    downloadBtn.addEventListener('click', downloadTicket);
+    printBtn.addEventListener('click', printTicket);
+    shareBtn.addEventListener('click', shareTicket);
+    saveHistoryBtn.addEventListener('click', saveToHistory);
+    confirmActionBtn.addEventListener('click', executeAction);
+    cancelConfirmBtn.addEventListener('click', () => confirmModal.classList.remove('active'));
+    closeConfirmModal.addEventListener('click', () => confirmModal.classList.remove('active'));
+    logoutBtn.addEventListener('click', logout);
+    
+    // Navegación entre secciones
+    navItems.forEach(item => {
+      item.addEventListener('click', (e) => {
+        e.preventDefault();
+        const sectionId = item.getAttribute('data-section');
+        
+        // Cambiar sección activa
+        sections.forEach(section => {
+          section.classList.remove('active');
+          if (section.id === sectionId) {
+            section.classList.add('active');
+            pageTitle.textContent = item.querySelector('span').textContent;
+          }
+        });
+        
+        // Actualizar navegación activa
+        navItems.forEach(navItem => navItem.classList.remove('active'));
+        item.classList.add('active');
+        
+        // Recargar datos si es necesario
+        if (sectionId === 'history-section') {
+          loadHistory();
+        } else if (sectionId === 'favorites-section') {
+          loadFavorites();
+        }
+      });
+    });
+    
+    // Función para mostrar notificación
+    function showToast(message, isError = false) {
+      toastMessage.textContent = message;
+      toast.className = 'toast show';
+      if (isError) {
+        toast.classList.add('error');
+        toast.querySelector('i').className = 'fas fa-exclamation-circle';
+      } else {
+        toast.classList.remove('error');
+        toast.querySelector('i').className = 'fas fa-check-circle';
+      }
+      
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 3000);
+    }
+    
+    // Generar números aleatorios
+    function generateNumbers() {
+      currentNumbers = [];
+      numbersContainer.innerHTML = '';
+      
+      while (currentNumbers.length < 10) {
+        const num = Math.floor(Math.random() * 80) + 1;
+        if (!currentNumbers.includes(num)) currentNumbers.push(num);
+      }
+      
+      currentNumbers.sort((a, b) => a - b);
+      
+      currentNumbers.forEach(num => {
+        const numberElement = document.createElement('div');
+        numberElement.className = 'number';
+        numberElement.textContent = num;
+        numbersContainer.appendChild(numberElement);
+      });
+      
+      showToast('Números generados correctamente');
+    }
+    
+    // Abrir modal de ticket
+    function openModal() {
+      if (currentNumbers.length === 0) {
+        showToast('Primero genera números', true);
+        return;
+      }
+      
+      modalNumbers.textContent = currentNumbers.join(', ');
+      modalDate.textContent = new Date().toLocaleDateString('es-ES', { 
+        day: '2-digit', month: '2-digit', year: 'numeric', 
+        hour: '2-digit', minute: '2-digit' 
+      });
+      
+      ticketModal.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+    
+    // Cerrar modal
+    function closeModal() {
+      ticketModal.classList.remove('active');
+      document.body.style.overflow = 'auto';
+    }
+    
+    // Copiar ticket al portapapeles
+    function copyTicket() {
+      const ticketText = `Kino TV\nNúmeros: ${currentNumbers.join(', ')}\nGenerado: ${modalDate.textContent}`;
+      navigator.clipboard.writeText(ticketText)
+        .then(() => showToast('Copiado al portapapeles'))
+        .catch(() => showToast('Error al copiar', true));
+    }
+    
+    // Descargar ticket como imagen
+    function downloadTicket() {
+      showToast('Generando imagen...');
+      
+      const printDiv = document.createElement('div');
+      printDiv.style.position = 'absolute';
+      printDiv.style.left = '-9999px';
+      printDiv.style.width = '300px';
+      printDiv.style.padding = '20px';
+      printDiv.style.backgroundColor = 'white';
+      printDiv.style.borderRadius = '10px';
+      printDiv.style.color = 'black';
+      printDiv.style.fontFamily = 'Arial, sans-serif';
+      
+      printDiv.innerHTML = `
+        <h2 style="color:#2563eb;text-align:center;margin-bottom:15px">Ticket Kino TV</h2>
+        <p style="font-weight:bold">Números:</p>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;margin:10px 0">
+          ${currentNumbers.map(n => `
+            <div style="
+              width:36px;height:36px;border-radius:50%;
+              background:linear-gradient(135deg, #2563eb, #1d4ed8);
+              color:white;display:flex;align-items:center;
+              justify-content:center;font-weight:bold
+            ">${n}</div>
+          `).join('')}
+        </div>
+        <p style="font-weight:bold">Generado: <span style="font-weight:normal">${modalDate.textContent}</span></p>
+      `;
+      
+      document.body.appendChild(printDiv);
+      
+      html2canvas(printDiv, {
+        scale: 2,
+        backgroundColor: '#ffffff',
+        logging: false,
+        useCORS: true
+      }).then(canvas => {
+        const link = document.createElement('a');
+        link.download = `kino-ticket-${new Date().toISOString().slice(0,10)}.jpg`;
+        link.href = canvas.toDataURL('image/jpeg', 0.9);
+        link.click();
+        showToast('Imagen descargada correctamente');
+      }).catch(err => {
+        console.error('Error al generar imagen:', err);
+        showToast('Error al generar imagen', true);
+      }).finally(() => {
+        document.body.removeChild(printDiv);
+      });
+    }
+    
+    // Imprimir ticket
+    function printTicket() {
+      const printContent = `
+        <div style="padding:20px;font-family:Arial;max-width:300px;margin:0 auto;color:black">
+          <h2 style="color:#2563eb;text-align:center">Ticket Kino TV</h2>
+          <p><strong>Números:</strong></p>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;margin:10px 0">
+            ${currentNumbers.map(n => `
+              <div style="
+                width:36px;height:36px;border-radius:50%;
+                background:linear-gradient(135deg, #2563eb, #1d4ed8);
+                color:white;display:flex;align-items:center;
+                justify-content:center;font-weight:bold
+              ">${n}</div>
+            `).join('')}
+          </div>
+          <p><strong>Generado:</strong> ${modalDate.textContent}</p>
+        </div>
+      `;
+      
+      const win = window.open('', '_blank');
+      win.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <title>Ticket Kino TV</title>
+          <style>
+            @media print {
+              body { margin:0; padding:10px; background:white; color:black; }
+            }
+          </style>
+        </head>
+        <body>${printContent}</body>
+        </html>
+      `);
+      
+      setTimeout(() => {
+        win.print();
+        setTimeout(() => win.close(), 500);
+      }, 300);
+    }
+    
+    // Compartir ticket
+    function shareTicket() {
+      const text = `Mis números Kino TV: ${currentNumbers.join(', ')}\nGenerado: ${modalDate.textContent}`;
+      const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`;
+      window.open(url, '_blank');
+    }
+    
+    // Guardar en historial
+    async function saveToHistory() {
+      if (!currentUser) {
+        showToast('Debes iniciar sesión para guardar', true);
+        return;
+      }
+      
+      if (currentNumbers.length === 0) {
+        showToast('Primero genera números', true);
+        return;
+      }
+      
+      try {
+        await addDoc(collection(db, "kinoHistory"), {
+          userId: currentUser.uid,
+          numbers: currentNumbers,
+          createdAt: serverTimestamp(),
+          isFavorite: false
+        });
+        
+        showToast('Guardado en historial correctamente');
+        loadHistory();
+      } catch (error) {
+        console.error('Error al guardar:', error);
+        showToast('Error al guardar en historial', true);
+      }
+    }
+    
+    // Cargar historial
+    async function loadHistory() {
+      if (!currentUser) return;
+      
+      try {
+        const q = query(
+          collection(db, "kinoHistory"), 
+          where("userId", "==", currentUser.uid),
+          where("isFavorite", "==", false)
+        );
+        
+        const querySnapshot = await getDocs(q);
+        
+        if (querySnapshot.empty) {
+          historyList.innerHTML = `
+            <div class="empty-state">
+              <i class="fas fa-history"></i>
+              <h3>No hay números en tu historial</h3>
+              <p>Genera números y guárdalos para verlos aquí</p>
+            </div>
+          `;
+          return;
+        }
+        
+        historyList.innerHTML = '';
+        
+        querySnapshot.forEach((doc) => {
+          const data = doc.data();
+          const date = data.createdAt?.toDate() || new Date();
+          
+          const historyItem = document.createElement('div');
+          historyItem.className = 'history-item';
+          historyItem.dataset.id = doc.id;
+          
+          historyItem.innerHTML = `
+            <div>
+              <div class="history-numbers">${data.numbers.join(', ')}</div>
+              <div class="history-date">${date.toLocaleDateString('es-ES', { 
+                day: '2-digit', month: '2-digit', year: 'numeric', 
+                hour: '2-digit', minute: '2-digit' 
+              })}</div>
+            </div>
+            <div class="history-actions">
+              <button class="action-btn copy-btn" title="Copiar">
+                <i class="fas fa-copy"></i>
+              </button>
+              <button class="action-btn favorite-btn" title="Añadir a favoritos">
+                <i class="fas fa-star"></i>
+              </button>
+              <button class="action-btn delete-btn" title="Eliminar">
+                <i class="fas fa-trash"></i>
+              </button>
+            </div>
+          `;
+          
+          historyList.appendChild(historyItem);
+          
+          // Asignar eventos a los botones
+          historyItem.querySelector('.copy-btn').addEventListener('click', () => {
+            navigator.clipboard.writeText(data.numbers.join(', '))
+              .then(() => showToast('Números copiados al portapapeles'))
+              .catch(() => showToast('Error al copiar', true));
+          });
+          
+          historyItem.querySelector('.favorite-btn').addEventListener('click', () => {
+            currentItemId = doc.id;
+            currentAction = 'favorite';
+            confirmTitle.textContent = 'Añadir a favoritos';
+            confirmMessage.textContent = '¿Deseas añadir estos números a tus favoritos?';
+            confirmActionBtn.className = 'btn btn-warning';
+            confirmActionBtn.innerHTML = '<i class="fas fa-star"></i> Añadir';
+            confirmModal.classList.add('active');
+          });
+          
+          historyItem.querySelector('.delete-btn').addEventListener('click', () => {
+            currentItemId = doc.id;
+            currentAction = 'delete';
+            confirmTitle.textContent = 'Eliminar del historial';
+            confirmMessage.textContent = '¿Estás seguro de que deseas eliminar estos números de tu historial?';
+            confirmActionBtn.className = 'btn btn-error';
+            confirmActionBtn.innerHTML = '<i class="fas fa-trash"></i> Eliminar';
+            confirmModal.classList.add('active');
+          });
+        });
+      } catch (error) {
+        console.error('Error al cargar historial:', error);
+        showToast('Error al cargar historial', true);
+      }
+    }
+    
+    // Cargar favoritos
+    async function loadFavorites() {
+      if (!currentUser) return;
+      
+      try {
+        const q = query(
+          collection(db, "kinoHistory"), 
+          where("userId", "==", currentUser.uid),
+          where("isFavorite", "==", true)
+        );
+        
+        const querySnapshot = await getDocs(q);
+        
+        if (querySnapshot.empty) {
+          favoritesList.innerHTML = `
+            <div class="empty-state">
+              <i class="fas fa-star"></i>
+              <h3>No tienes números favoritos</h3>
+              <p>Marca números como favoritos para verlos aquí</p>
+            </div>
+          `;
+          return;
+        }
+        
+        favoritesList.innerHTML = '';
+        
+        querySnapshot.forEach((doc) => {
+          const data = doc.data();
+          const date = data.createdAt?.toDate() || new Date();
+          
+          const favoriteItem = document.createElement('div');
+          favoriteItem.className = 'favorite-item';
+          favoriteItem.dataset.id = doc.id;
+          
+          favoriteItem.innerHTML = `
+            <div>
+              <div class="favorite-numbers">${data.numbers.join(', ')}</div>
+              <div class="favorite-date">${date.toLocaleDateString('es-ES', { 
+                day: '2-digit', month: '2-digit', year: 'numeric', 
+                hour: '2-digit', minute: '2-digit' 
+              })}</div>
+            </div>
+            <div class="favorite-actions">
+              <button class="action-btn copy-btn" title="Copiar">
+                <i class="fas fa-copy"></i>
+              </button>
+              <button class="action-btn remove-favorite-btn" title="Quitar de favoritos">
+                <i class="fas fa-star" style="color: var(--accent)"></i>
+              </button>
+              <button class="action-btn delete-btn" title="Eliminar">
+                <i class="fas fa-trash"></i>
+              </button>
+            </div>
+          `;
+          
+          favoritesList.appendChild(favoriteItem);
+          
+          // Asignar eventos a los botones
+          favoriteItem.querySelector('.copy-btn').addEventListener('click', () => {
+            navigator.clipboard.writeText(data.numbers.join(', '))
+              .then(() => showToast('Números copiados al portapapeles'))
+              .catch(() => showToast('Error al copiar', true));
+          });
+          
+          favoriteItem.querySelector('.remove-favorite-btn').addEventListener('click', () => {
+            currentItemId = doc.id;
+            currentAction = 'remove-favorite';
+            confirmTitle.textContent = 'Quitar de favoritos';
+            confirmMessage.textContent = '¿Deseas quitar estos números de tus favoritos?';
+            confirmActionBtn.className = 'btn btn-secondary';
+            confirmActionBtn.innerHTML = '<i class="fas fa-star"></i> Quitar';
+            confirmModal.classList.add('active');
+          });
+          
+          favoriteItem.querySelector('.delete-btn').addEventListener('click', () => {
+            currentItemId = doc.id;
+            currentAction = 'delete';
+            confirmTitle.textContent = 'Eliminar de favoritos';
+            confirmMessage.textContent = '¿Estás seguro de que deseas eliminar estos números de tus favoritos?';
+            confirmActionBtn.className = 'btn btn-error';
+            confirmActionBtn.innerHTML = '<i class="fas fa-trash"></i> Eliminar';
+            confirmModal.classList.add('active');
+          });
+        });
+      } catch (error) {
+        console.error('Error al cargar favoritos:', error);
+        showToast('Error al cargar favoritos', true);
+      }
+    }
+    
+    // Ejecutar acción confirmada
+    async function executeAction() {
+      confirmModal.classList.remove('active');
+      
+      try {
+        const docRef = doc(db, "kinoHistory", currentItemId);
+        
+        switch (currentAction) {
+          case 'favorite':
+            await updateDoc(docRef, { isFavorite: true });
+            showToast('Añadido a favoritos correctamente');
+            loadHistory();
+            loadFavorites();
+            break;
+            
+          case 'remove-favorite':
+            await updateDoc(docRef, { isFavorite: false });
+            showToast('Quitado de favoritos correctamente');
+            loadHistory();
+            loadFavorites();
+            break;
+            
+          case 'delete':
+            await deleteDoc(docRef);
+            showToast('Eliminado correctamente');
+            
+            // Recargar la sección correspondiente
+            if (document.getElementById('history-section').classList.contains('active')) {
+              loadHistory();
+            } else {
+              loadFavorites();
+            }
+            break;
+        } 
+      } catch (error) {
+        console.error('Error al ejecutar acción:', error);
+        showToast('Error al realizar la acción', true);
+      }
+    }
+    
+    // Cerrar sesión
+    function logout() {
+      signOut(auth).then(() => {
+        window.location.href = "index.html";
+      }).catch((error) => {
+        showToast('Error al cerrar sesión', true);
+      });
+    }
+    
+    // Generar números iniciales
+    generateNumbers();
+  </script>
+</body>
+</html>
