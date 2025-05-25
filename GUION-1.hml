@@ -1,0 +1,1459 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sombras en el Bar: Guion Interactivo</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      color: #e2e8f0;
+      font-family: 'Courier Prime', monospace;
+      line-height: 1.6;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    .container {
+      max-width: 794px; /* A4 width at 96dpi */
+      margin: 0 auto;
+      padding: 2rem;
+    }
+    @media (max-width: 768px) {
+      .container {
+        padding: 1rem;
+        max-width: 100%;
+      }
+    }
+    .episode-content {
+      display: none;
+      opacity: 0;
+      transition: opacity 0.5s ease-in-out;
+    }
+    .episode-content.active {
+      display: block;
+      opacity: 1;
+    }
+    .nav-container {
+      position: sticky;
+      top: 0;
+      background: rgba(15, 23, 42, 0.95);
+      backdrop-filter: blur(10px);
+      z-index: 10;
+      padding: 1rem;
+      box-shadow: 0 2px 5px rgba(0, 212, 255, 0.3);
+    }
+    .nav-button {
+      transition: all 0.3s ease;
+      border: 2px solid transparent;
+      background: #1e293b;
+      color: #00d4ff;
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      font-family: 'Roboto Mono', monospace;
+      font-weight: 700;
+      font-size: 0.9rem;
+      flex: 1;
+      text-align: center;
+      cursor: pointer;
+    }
+    .nav-button:hover {
+      border-color: #00d4ff;
+      background: #00d4ff;
+      color: #0f172a;
+      box-shadow: 0 0 12px rgba(0, 212, 255, 0.5);
+    }
+    .nav-button.active {
+      background: #00d4ff;
+      color: #0f172a;
+      border-color: #00d4ff;
+    }
+    .copy-button {
+      transition: all 0.3s ease;
+      background: #1e293b;
+      color: #00d4ff;
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      font-family: 'Roboto Mono', monospace;
+      font-weight: 700;
+      width: 100%;
+      text-align: center;
+      cursor: pointer;
+    }
+    .copy-button:hover {
+      background: #00d4ff;
+      color: #0f172a;
+      box-shadow: 0 0 12px rgba(0, 212, 255, 0.5);
+    }
+    .guion-text {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid #00d4ff;
+      border-radius: 12px;
+      padding: 2rem;
+      box-shadow: inset 0 0 10px rgba(0, 212, 255, 0.2);
+      font-family: 'Courier Prime', monospace;
+      font-size: 12pt;
+      line-height: 1.8;
+    }
+    details {
+      margin-bottom: 1.5rem;
+      border-bottom: 1px solid #00d4ff;
+    }
+    summary {
+      background: #1e293b;
+      padding: 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      color: #00d4ff;
+      font-family: 'Roboto Mono', monospace;
+      font-weight: 700;
+      transition: all 0.3s ease;
+    }
+    summary:hover {
+      background: #00d4ff;
+      color: #0f172a;
+      box-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+    }
+    .slugline {
+      margin-left: 1.2in;
+      font-weight: bold;
+      color: #00d4ff;
+      margin-top: 1.5em;
+      margin-bottom: 0.5em;
+      text-transform: uppercase;
+    }
+    .action {
+      margin-left: 1in;
+      margin-right: 1in;
+      margin-bottom: 1em;
+      color: #e2e8f0;
+    }
+    .character {
+      margin-left: 3.7in;
+      font-weight: bold;
+      color: #ff00ff;
+      text-transform: uppercase;
+      margin-bottom: 0.2em;
+    }
+    .dialogue {
+      margin-left: 2.5in;
+      margin-right: 2.5in;
+      margin-bottom: 1em;
+      color: #e2e8f0;
+    }
+    .transition {
+      margin-left: 6in;
+      font-weight: bold;
+      color: #00d4ff;
+      margin-top: 1em;
+      margin-bottom: 1em;
+      text-transform: uppercase;
+    }
+    h1, h2, h3, h4 {
+      color: #00d4ff;
+      text-shadow: 0 0 8px rgba(0, 212, 255, 0.3);
+      font-family: 'Roboto Mono', monospace;
+    }
+    h1 {
+      font-size: 2.5rem;
+      text-align: center;
+      margin-bottom: 2rem;
+      text-transform: uppercase;
+    }
+    h2 {
+      font-size: 2rem;
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+    h3 {
+      font-size: 1.5rem;
+      margin-top: 2rem;
+      margin-bottom: 1rem;
+    }
+    h4 {
+      font-size: 1.2rem;
+      margin-top: 1.5rem;
+      margin-bottom: 0.75rem;
+    }
+    .section {
+      margin-bottom: 2.5rem;
+    }
+    @media (max-width: 768px) {
+      .nav-button {
+        padding: 0.5rem;
+        font-size: 0.8rem;
+      }
+      .guion-text {
+        padding: 1rem;
+        font-size: 11pt;
+      }
+      .slugline, .action, .character, .dialogue, .transition {
+        margin-left: 0.5in;
+        margin-right: 0.5in;
+      }
+      .character {
+        margin-left: 2in;
+      }
+      .dialogue {
+        margin-left: 1in;
+        margin-right: 1in;
+      }
+      .transition {
+        margin-left: 4in;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="nav-container">
+    <div class="flex flex-wrap justify-center gap-2">
+      <button onclick="showEpisode(1)" class="nav-button active" id="nav-1">EPISODIO 1</button>
+      <button onclick="showEpisode(2)" class="nav-button" id="nav-2">EPISODIO 2</button>
+      <button onclick="showEpisode(3)" class="nav-button" id="nav-3">EPISODIO 3</button>
+      <button onclick="showEpisode(4)" class="nav-button" id="nav-4">EPISODIO 4</button>
+      <button onclick="showEpisode(5)" class="nav-button" id="nav-5">EPISODIO 5</button>
+    </div>
+  </div>
+
+  <div class="container">
+    <h1 class="animate-pulse">SOMBRAS EN EL BAR</h1>
+
+    <!-- Episodio 1 -->
+    <div id="episode-1" class="episode-content active guion-text">
+      <h2>EPISODIO 1: SOMBRAS EN EL BAR</h2>
+      <button onclick="copyEpisode('episode-1')" class="copy-button mb-8">COPIAR EPISODIO</button>
+      <div class="episode-text">
+        <div class="section">
+          <p><strong>DURACIÓN POR EPISODIO:</strong> 20 minutos</p>
+          <p><strong>GÉNERO:</strong> Drama psicológico / Romance oscuro / Suspenso</p>
+        </div>
+
+        <div class="section">
+          <h3>RECAPITULACIÓN DE LA HISTORIA</h3>
+          <h4>1. SINOPSIS GENERAL:</h4>
+          <p>En un bar envuelto en penumbras, Lucía, atrapada en un amor no correspondido por el carismático pero cruel Diego, observa con angustia cómo él seduce a su amiga Sofía, ignorante del pasado íntimo entre Lucía y Diego. La llegada de Mateo, un camarero de mirada profunda, enciende una chispa de esperanza en Lucía, ofreciéndole un escape de su tormento. La narrativa teje un tapiz de deseo, traición y redención, donde las emociones chocan bajo la luz tenue del bar.</p>
+
+          <h4>2. TEMÁTICAS PRINCIPALES:</h4>
+          <ul class="list-disc pl-6">
+            <li><strong>Amor no correspondido:</strong> El dolor de Lucía ante el desdén de Diego.</li>
+            <li><strong>Traición inconsciente:</strong> Sofía, sin saberlo, hiere a Lucía al acercarse a Diego.</li>
+            <li><strong>Autodescubrimiento:</strong> La conexión con Mateo despierta la fuerza interior de Lucía.</li>
+            <li><strong>Manipulación emocional:</strong> Diego usa su carisma como arma de control.</li>
+            <li><strong>Esperanza incierta:</strong> Mateo representa una luz, pero con sombras de duda.</li>
+          </ul>
+
+          <h4>3. PERSONAJES Y SU SIMBOLOGÍA:</h4>
+          <ul class="list-disc pl-6">
+            <li><strong>Lucía:</strong> La vulnerabilidad encarnada, buscando su valor en medio del dolor.</li>
+            <li><strong>Diego:</strong> La tentación destructiva, un manipulador que consume sin remordimientos.</li>
+            <li><strong>Sofía:</strong> La inocencia aparente, un catalizador de conflicto por su ignorancia.</li>
+            <li><strong>Mateo:</strong> La empatía y la redención, un faro en la oscuridad con un pasado misterioso.</li>
+          </ul>
+        </div>
+
+        <div class="section">
+          <h3>GUION – EPISODIO 1: SOMBRAS EN EL BAR</h3>
+
+          <details>
+            <summary>ESCENA 1</summary>
+            <p class="slugline">INT. BAR – NOCHE</p>
+            <p class="action">Luces tenues, un jazz suave susurra en el fondo. Mesas de madera desgastada crean un ambiente íntimo pero cargado de tensión. La cámara recorre el bar, capturando murmullos y risas esporádicas. Enfoca a LUCÍA, sola en una mesa trasera, con una copa de vino a medio beber. Su rostro refleja una tristeza profunda, sus ojos fijos en un punto distante.</p>
+          </details>
+
+          <details>
+            <summary>ESCENA 2</summary>
+            <p class="slugline">INT. BAR – MESA DE DIEGO Y SOFÍA – NOCHE</p>
+            <p class="action">DIEGO, carismático y confiado, se inclina hacia SOFÍA, que ríe con coquetería, ajena a la mirada de Lucía.</p>
+            <p class="character">DIEGO</p>
+            <p class="dialogue">(seductor)<br>Tu risa ilumina este lugar, Sofía. Como si el resto del mundo desapareciera.</p>
+            <p class="character">SOFÍA</p>
+            <p class="dialogue">(sonrojada)<br>Para, Diego, me vas a hacer sonrojar más.</p>
+            <p class="action">La cámara corta a LUCÍA, sus dedos apretando la copa con fuerza, sus ojos brillando con una mezcla de celos y dolor.</p>
+          </details>
+
+          <details>
+            <summary>ESCENA 3</summary>
+            <p class="slugline">INT. BAR – MESA DE LUCÍA – NOCHE</p>
+            <p class="action">Primer plano de LUCÍA, su mirada perdida en la copa de vino.</p>
+            <p class="character">LUCÍA (VOZ EN OFF)</p>
+            <p class="dialogue">¿Cómo llegué aquí? Sentada, viendo cómo él la conquista… como me conquistó a mí.</p>
+            <p class="action">FLASHBACK: LUCÍA y DIEGO en una cama, riendo, él besándola con pasión. Corte al presente, su expresión se endurece, una lágrima contenida.</p>
+          </details>
+
+          <details>
+            <summary>ESCENA 4</summary>
+            <p class="slugline">INT. BAR – MESA DE DIEGO Y SOFÍA – NOCHE</p>
+            <p class="action">DIEGO toma la mano de SOFÍA, acariciándola con suavidad mientras mantiene su mirada intensa.</p>
+            <p class="character">DIEGO</p>
+            <p class="dialogue">Tus ojos cuentan historias, Sofía. Quiero saberlas todas.</p>
+            <p class="character">SOFÍA</p>
+            <p class="dialogue">No sé si creerte, Diego. Eres demasiado.</p>
+            <p class="action">LUCÍA desvía la mirada, incapaz de soportar la escena, su respiración agitada.</p>
+          </details>
+
+          <details>
+            <summary>ESCENA 5</summary>
+            <p class="slugline">INT. BAR – ENTRADA – NOCHE</p>
+            <p class="action">La puerta del bar se abre lentamente. MATEO, camarero de 30 años con una presencia magnética, entra con una bandeja vacía. Sus ojos recorren el lugar y se detienen en LUCÍA. Sus miradas se cruzan, un instante de conexión silenciosa, casi eléctrica, que parece detener el tiempo.</p>
+          </details>
+
+          <details>
+            <summary>ESCENA 6</summary>
+            <p class="slugline">INT. BAR – MESA DE LUCÍA – NOCHE</p>
+            <p class="action">LUCÍA sigue a MATEO con la mirada mientras él sirve mesas con agilidad, su presencia llenando el espacio.</p>
+            <p class="character">LUCÍA (VOZ EN OFF)</p>
+            <p class="dialogue">¿Quién es él? No lo había visto antes… pero esa mirada… ¿Por qué siento que me entiende?</p>
+          </details>
+
+          <details>
+            <summary>ESCENA 7</summary>
+            <p class="slugline">INT. BAR – MESA DE DIEGO Y SOFÍA – NOCHE</p>
+            <p class="action">DIEGO cuenta una anécdota con entusiasmo, gesticulando ampliamente, mientras SOFÍA lo observa, cautivada.</p>
+            <p class="character">DIEGO</p>
+            <p class="dialogue">Y el tipo me dice: “¡No puedes escalar esa montaña!” Y yo, claro, lo hice en una hora.</p>
+            <p class="character">SOFÍA</p>
+            <p class="dialogue">(riendo)<br>¡Imposible, Diego!</p>
+            <p class="action">LUCÍA aprieta los puños bajo la mesa, su rostro tenso, luchando por contener sus emociones.</p>
+          </details>
+
+          <details>
+            <summary>ESCENA 8</summary>
+            <p class="slugline">INT. BAR – MESA DE LUCÍA – NOCHE</p>
+            <p class="action">MATEO se acerca a la mesa de LUCÍA con una botella de agua, su expresión amable pero atenta.</p>
+            <p class="character">MATEO</p>
+            <p class="dialogue">(amable)<br>¿Todo bien? Tu copa está casi vacía. ¿Otra?</p>
+            <p class="character">LUCÍA</p>
+            <p class="dialogue">(tímida)<br>No, gracias… estoy bien.</p>
+            <p class="action">MATEO sonríe, percibe su tristeza, y se aleja con una mirada de comprensión.</p>
+          </details>
+
+          <details>
+            <summary>ESCENA 9</summary>
+            <p class="slugline">INT. BAR – MESA DE LUCÍA – NOCHE</p>
+            <p class="action">LUCÍA mira su copa vacía, perdida en sus pensamientos.</p>
+            <p class="character">LUCÍA (VOZ EN OFF)</p>
+            <p class="dialogue">Diego siempre consigue lo que quiere. Y yo… solo miro desde lejos.</p>
+            <p class="action">FLASHBACK: DIEGO besándola apasionadamente en un parque, luego ignorándola al día siguiente, dejándola devastada.</p>
+          </details>
+
+          <details>
+            <summary>ESCENA 10</summary>
+            <p class="slugline">INT. BAR – MESA DE DIEGO Y SOFÍA – NOCHE</p>
+            <p class="action">DIEGO se inclina hacia SOFÍA, sus rostros peligrosamente cerca, la tensión romántica palpable.</p>
+            <p class="character">DIEGO</p>
+            <p class="dialogue">(susurrando)<br>Deberíamos salir de aquí alguna vez, solo tú y yo.</p>
+            <p class="character">SOFÍA</p>
+            <p class="dialogue">Tal vez… ¿Qué tienes en mente?</p>
+            <p class="action">LUCÍA aprieta los labios, su mirada fija en ellos, el dolor evidente en su rostro.</p>
+          </details>
+
+          <details>
+            <summary>ESCENA 11</summary>
+            <p class="slugline">INT. BAR – PASILLO AL BAÑO – NOCHE</p>
+            <p class="action">LUCÍA se levanta abruptamente, haciendo chirriar la silla contra el suelo de madera.</p>
+            <p class="character">LUCÍA (VOZ EN OFF)</p>
+            <p class="dialogue">No puedo seguir aquí, viendo cómo se la lleva.</p>
+            <p class="action">Camina hacia el pasillo con pasos rápidos, su respiración entrecortada.</p>
+          </details>
+
+          <details>
+            <summary>ESCENA 12</summary>
+            <p class="slugline">INT. BAR – PASILLO – NOCHE</p>
+            <p class="action">Pasillo estrecho, iluminado por una luz tenue. LUCÍA se apoya contra la pared, conteniendo lágrimas. Sus manos tiemblan mientras intenta calmarse.</p>
+          </details>
+
+          <details>
+            <summary>ESCENA 13</summary>
+            <p class="slugline">INT. BAR – PASILLO – NOCHE</p>
+            <p class="action">MATEO aparece en el pasillo, bandeja en mano, su expresión preocupada al ver a LUCÍA.</p>
+            <p class="character">MATEO</p>
+            <p class="dialogue">(suave)<br>Oye, ¿estás bien? Te vi salir y… parecía que necesitabas un respiro.</p>
+            <p class="action">LUCÍA lo mira, sorprendida por su atención, sus ojos aún húmedos.</p>
+          </details>
+
+          <details>
+            <summary>ESCENA 14</summary>
+            <p class="slugline">INT. BAR – PASILLO – NOCHE</p>
+            <p class="action">LUCÍA se limpia una lágrima con el dorso de la mano, intentando recomponerse.</p>
+            <p class="character">LUCÍA</p>
+            <p class="dialogue">Solo… necesitaba un momento. Todo está bien.</p>
+            <p class="character">MATEO</p>
+            <p class="dialogue">No parece que esté bien. Pero no tienes que contármelo.</p>
+            <p class="action">Saca un pequeño papel de su delantal y se lo ofrece.</p>
+            <p class="character">MATEO</p>
+            <p class="dialogue">Si necesitas hablar, aquí está mi número. A veces, un desconocido escucha mejor.</p>
+          </details>
+
+          <details>
+            <summary>ESCENA 15</summary>
+            <p class="slugline">INT. BAR – PASILLO – NOCHE</p>
+            <p class="action">LUCÍA toma el papel, sus dedos rozan los de MATEO, un contacto breve pero cargado de significado.</p>
+            <p class="character">LUCÍA</p>
+            <p class="dialogue">(susurrando)<br>Gracias… No sé por qué haces esto.</p>
+            <p class="character">MATEO</p>
+            <p class="dialogue">Porque sé lo que es sentirse invisible.</p>
+            <p class="action">Se aleja lentamente, dejándola con el papel en la mano, mirando su figura desaparecer en el bar.</p>
+          </details>
+
+          <details>
+            <summary>ESCENA 16</summary>
+            <p class="slugline">INT. BAR – BAÑO – NOCHE</p>
+            <p class="action">Luz fría, azulejos desgastados. LUCÍA se mira en el espejo, guarda el número de MATEO en WhatsApp. Escribe: “Soy la chica del bar. Gracias por el gesto.” Envía el mensaje, una pequeña sonrisa asoma en su rostro.</p>
+          </details>
+
+          <details>
+            <summary>ESCENA 17</summary>
+            <p class="slugline">INT. BAR – MESA DE DIEGO Y SOFÍA – NOCHE</p>
+            <p class="action">DIEGO y SOFÍA, ahora lado a lado, casi tocándose, la química entre ellos evidente.</p>
+            <p class="character">DIEGO</p>
+            <p class="dialogue">¿Nos escapamos esta noche?</p>
+            <p class="character">SOFÍA</p>
+            <p class="dialogue">Eres un peligro, Diego. Pero… tal vez.</p>
+          </details>
+
+          <details>
+            <summary>ESCENA 18</summary>
+            <p class="slugline">INT. BAR – MESA DE LUCÍA – NOCHE</p>
+            <p class="action">LUCÍA regresa a su mesa, ve a DIEGO y SOFÍA. Su teléfono vibra. Mensaje de MATEO: “Me alegra que escribieras. Si quieres, estoy libre después de mi turno.” LUCÍA sonríe débilmente, un atisbo de esperanza.</p>
+          </details>
+
+          <details>
+            <summary>ESCENA 19</summary>
+            <p class="slugline">INT. BAR – FLASHBACK – PARQUE – DÍA</p>
+            <p class="action">LUCÍA y DIEGO caminan por un parque, él le roba un beso rápido, ella ríe feliz.</p>
+            <p class="character">DIEGO</p>
+            <p class="dialogue">Eres especial, Lucía. No lo olvides.</p>
+            <p class="action">Corte al presente: LUCÍA aprieta el teléfono, su expresión endurecida por el recuerdo.</p>
+          </details>
+
+          <details>
+            <summary>ESCENA 20</summary>
+            <p class="slugline">INT. BAR – MESA DE DIEGO Y SOFÍA – NOCHE</p>
+            <p class="action">SOFÍA mira brevemente a LUCÍA, notando su expresión de dolor.</p>
+            <p class="character">SOFÍA</p>
+            <p class="dialogue">(a DIEGO)<br>Espera, creo que algo le pasa a Lucía.</p>
+            <p class="character">DIEGO</p>
+            <p class="dialogue">Déjala, estará bien. Cuéntame más de ti.</p>
+            <p class="action">SOFÍA duda, pero vuelve su atención a DIEGO, atrapada en su encanto.</p>
+          </details>
+
+          <details>
+            <summary>ESCENA 21</summary>
+            <p class="slugline">INT. BAR – MESA DE LUCÍA – NOCHE</p>
+            <p class="action">LUCÍA escribe a MATEO: “No sé si debería estar aquí. Esto me está matando.” Mensaje de MATEO: “Puedo verte desde la barra. Hay un café a dos calles.”</p>
+          </details>
+
+          <details>
+            <summary>ESCENA 22</summary>
+            <p class="slugline">INT. BAR – MESA DE DIEGO Y SOFÍA – NOCHE</p>
+            <p class="action">DIEGO acaricia la mejilla de SOFÍA, su mirada intensa.</p>
+            <p class="character">DIEGO</p>
+            <p class="dialogue">No sabes cuánto quería estar así contigo.</p>
+            <p class="action">SOFÍA ríe, nerviosa, atrapada en el momento.</p>
+          </details>
+
+          <details>
+            <summary>ESCENA 23</summary>
+            <p class="slugline">INT. BAR – MESA DE LUCÍA – NOCHE</p>
+            <p class="action">LUCÍA, decidida, respira hondo.</p>
+            <p class="character">LUCÍA (VOZ EN OFF)</p>
+            <p class="dialogue">No puedo seguir siendo la sombra de Diego.</p>
+            <p class="action">Escribe a MATEO: “Termina tu turno. Me voy contigo.”</p>
+          </details>
+
+          <details>
+            <summary>ESCENA 24</summary>
+            <p class="slugline">INT. BAR – BARRA – NOCHE</p>
+            <p class="action">MATEO lee el mensaje, una sonrisa sutil cruza su rostro. Mira a LUCÍA desde la barra, asintiendo ligeramente.</p>
+          </details>
+
+          <details>
+            <summary>ESCENA 25</summary>
+            <p class="slugline">INT. BAR – SALIDA – NOCHE</p>
+            <p class="action">LUCÍA camina hacia la puerta del bar, sin mirar atrás, su paso firme a pesar del temblor en sus manos.</p>
+          </details>
+
+          <details>
+            <summary>ESCENA 26</summary>
+            <p class="slugline">EXT. BAR – CALLE – NOCHE</p>
+            <p class="action">LUCÍA, apoyada en una pared, mira las estrellas en el cielo nocturno. MATEO sale del bar, quitándose el delantal.</p>
+            <p class="character">MATEO</p>
+            <p class="dialogue">Pensé que te arrepentirías.</p>
+            <p class="character">LUCÍA</p>
+            <p class="dialogue">Casi lo hice. Pero no quiero ser esa persona.</p>
+          </details>
+
+          <details>
+            <summary>ESCENA 27</summary>
+            <p class="slugline">EXT. CALLE – NOCHE</p>
+            <p class="action">LUCÍA y MATEO caminan bajo las farolas, el silencio cómodo entre ellos.</p>
+            <p class="character">LUCÍA</p>
+            <p class="dialogue">¿Por qué me ayudaste? Ni me conoces.</p>
+            <p class="character">MATEO</p>
+            <p class="dialogue">Porque vi algo en tus ojos. Algo que yo también he sentido.</p>
+          </details>
+
+          <details>
+            <summary>ESCENA 28</summary>
+            <p class="slugline">INT. CAFÉ – NOCHE</p>
+            <p class="action">Ambiente cálido, luces suaves. LUCÍA y MATEO están en una mesa apartada, tazas de café frente a ellos.</p>
+            <p class="character">LUCÍA</p>
+            <p class="dialogue">Diego me hizo sentir especial… y luego me descartó.</p>
+            <p class="action">MATEO escucha con atención, su mirada cálida y comprensiva.</p>
+          </details>
+
+          <details>
+            <summary>ESCENA 29</summary>
+            <p class="slugline">INT. CAFÉ – NOCHE</p>
+            <p class="action">MATEO comparte un fragmento de su pasado, su voz baja y reflexiva.</p>
+            <p class="character">MATEO</p>
+            <p class="dialogue">Tuve una relación que me rompió. Aprendí que el valor no te lo dan los demás.</p>
+            <p class="action">LUCÍA lo mira, sintiendo una conexión profunda, sus defensas comenzando a caer.</p>
+          </details>
+
+          <details>
+            <summary>ESCENA 30</summary>
+            <p class="slugline">INT. CAFÉ – NOCHE</p>
+            <p class="action">La cámara se aleja lentamente, capturando a LUCÍA y MATEO en su mesa, inmersos en su conversación.</p>
+            <p class="character">LUCÍA (VOZ EN OFF)</p>
+            <p class="dialogue">Por primera vez, no me siento sola.</p>
+            <p class="transition">FUNDIDO A NEGRO.</p>
+          </details>
+        </div>
+      </div>
+    </div>
+
+    <!-- Episodio 2 -->
+    <div id="episode-2" class="episode-content guion-text">
+      <h2>EPISODIO 2: ECOS DEL PASADO</h2>
+      <button onclick="copyEpisode('episode-2')" class="copy-button mb-8">COPIAR EPISODIO</button>
+      <div class="episode-text">
+        <div class="section">
+          <p><strong>DURACIÓN POR EPISODIO:</strong> 20 minutos</p>
+          <p><strong>GÉNERO:</strong> Drama psicológico / Romance oscuro / Suspenso</p>
+        </div>
+
+        <div class="section">
+          <h3>RECAPITULACIÓN DE LA HISTORIA</h3>
+          <h4>1. SINOPSIS GENERAL:</h4>
+          <p>Lucía explora su conexión con Mateo, pero los recuerdos de Diego la persiguen, anclándola al dolor. Sofía, cegada por el encanto de Diego, profundiza su relación con él, ignorando el sufrimiento de Lucía. Una confrontación entre las amigas revela secretos dolorosos, mientras Mateo comparte fragmentos de su pasado, añadiendo capas de misterio. Diego, manipulador, planea mantener el control, pero las grietas en su fachada comienzan a aparecer.</p>
+
+          <h4>2. TEMÁTICAS PRINCIPALES:</h4>
+          <ul class="list-disc pl-6">
+            <li><strong>Cicatrización emocional:</strong> Lucía intenta sanar, pero Diego la ata al pasado.</li>
+            <li><strong>Amistad fracturada:</strong> La traición de Sofía tensa su relación con Lucía.</li>
+            <li><strong>Confianza frágil:</strong> La conexión con Mateo crece, pero con dudas persistentes.</li>
+            <li><strong>Manipulación persistente:</strong> Diego sigue tejiendo su red de control.</li>
+            <li><strong>Sombras del pasado:</strong> Secretos emergen, complicando las dinámicas.</li>
+          </ul>
+
+          <h4>3. PERSONAJES Y SU SIMBOLOGÍA:</h4>
+          <ul class="list-disc pl-6">
+            <li><strong>Lucía:</strong> Resiliencia frágil, buscando liberarse de las cadenas del pasado.</li>
+            <li><strong>Diego:</strong> El caos que consume todo a su paso, un manipulador implacable.</li>
+            <li><strong>Sofía:</strong> La amiga atrapada en la ilusión de Diego, ignorante del daño.</li>
+            <li><strong>Mateo:</strong> La esperanza con un pasado que lo persigue, un enigma en sí mismo.</li>
+          </ul>
+        </div>
+
+        <div class="section">
+          <h3>GUION – EPISODIO 2: ECOS DEL PASADO</h3>
+
+          <details>
+            <summary>ESCENA 1</summary>
+            <p class="slugline">INT. CAFÉ – MAÑANA</p>
+            <p class="action">Luz cálida ilumina el café, creando un ambiente acogedor. LUCÍA y MATEO están sentados frente a tazas de café humeante, la conversación fluye con una mezcla de timidez y conexión.</p>
+            <p class="character">LUCÍA</p>
+            <p class="dialogue">No sé cómo terminé aquí contigo. Todo pasó tan rápido.</p>
+            <p class="character">MATEO</p>
+            <p class="dialogue">A veces, el destino te empuja a donde necesitas estar.</p>
+          </details>
+
+          <details>
+            <summary>ESCENA 2</summary>
+            <p class="slugline">INT. FLASHBACK – BAR – NOCHE</p>
+            <p class="action">LUCÍA y DIEGO, meses atrás, en un abrazo íntimo bajo la luz tenue del bar.</p>
+            <p class="character">DIEGO</p>
+            <p class="dialogue">Tú y yo, siempre, Lucía.</p>
+            <p class="action">Corte al presente: LUCÍA baja la mirada en el café, tensa, el recuerdo como un peso.</p>
+          </details>
+
+          <details>
+            <summary>ESCENA 3</summary>
+            <p class="slugline">INT. APARTAMENTO DE SOFÍA – MAÑANA</p>
+            <p class="action">SOFÍA revisa su teléfono, sonriendo a mensajes de DIEGO. Escribe: “Anoche fue increíble.” Su expresión está llena de ilusión, ajena al conflicto que está causando.</p>
+          </details>
+
+          <details>
+            <summary>ESCENA 4</summary>
+            <p class="slugline">INT. CAFÉ – MAÑANA</p>
+            <p class="action">LUCÍA y MATEO continúan hablando, la conversación volviéndose más personal.</p>
+            <p class="character">LUCÍA</p>
+            <p class="dialogue">Diego me hizo creer que era especial. Pero solo fui un juego para él.</p>
+            <p class="character">MATEO</p>
+            <p class="dialogue">No eres un juego, Lucía. Eres más de lo que él vio.</p>
+          </details>
+
+          <details>
+            <summary>ESCENA 5</summary>
+            <p class="slugline">INT. BAR – NOCHE</p>
+            <p class="action">DIEGO y SOFÍA ríen en una mesa, la química entre ellos creciendo.</p>
+            <p class="character">DIEGO</p>
+            <p class="dialogue">Quiero verte más, Sofía. Esto apenas empieza.</p>
+            <p class="character">SOFÍA</p>
+            <p class="dialogue">(encantada)<br>Me gusta cómo suena eso.</p>
+          </details>
+
+          <details>
+            <summary>ESCENA 6</summary>
+            <p class="slugline">EXT. CALLE – DÍA</p>
+            <p class="action">LUCÍA camina por una calle bulliciosa, pensativa, su teléfono en la mano.</p>
+            <p class="character">LUCÍA (VOZ EN OFF)</p>
+            <p class="dialogue">Mateo es diferente… pero, ¿puedo confiar en él?</p>
+          </details>
+
+          <details>
+            <summary>ESCENA 7</summary>
+            <p class="slugline">INT. BAR – BARRA – NOCHE</p>
+            <p class="action">MATEO limpia la barra con movimientos precisos, su mirada perdida.</p>
+            <p class="character">COMPAÑERO</p>
+            <p class="dialogue">¿Sigues huyendo de eso, Mateo?</p>
+            <p class="action">MATEO ignora el comentario, su expresión tensa, un secreto no dicho.</p>
+          </details>
+
+          <details>
+            <summary>ESCENA 8</summary>
+            <p class="slugline">INT. APARTAMENTO DE SOFÍA – DÍA</p>
+            <p class="action">SOFÍA marca el número de LUCÍA, preocupada.</p>
+            <p class="character">SOFÍA</p>
+            <p class="dialogue">Oye, no te vi anoche. ¿Estás bien?</p>
+            <p class="character">LUCÍA</p>
+            <p class="dialogue">(por teléfono, dudando)<br>Sí, solo necesitaba aire.</p>
+          </details>
+
+          <details>
+            <summary>ESCENA 9</summary>
+            <p class="slugline">INT. CALLE – DÍA</p>
+            <p class="action">LUCÍA escribe a MATEO: “¿Quieres volver al café esta noche?” Mensaje de MATEO: “Estaré allí.” Su rostro muestra una mezcla de esperanza y duda.</p>
+          </details>
+
+          <details>
+            <summary>ESCENA 10</summary>
+            <p class="slugline">INT. BAR – NOCHE</p>
+            <p class="action">DIEGO habla con un amigo en el bar, su tono arrogante.</p>
+            <p class="character">DIEGO</p>
+            <p class="dialogue">Sofía es fácil. Pero Lucía… aún me busca.</p>
+            <p class="action">El amigo ríe, pero la cámara enfoca la frialdad en los ojos de DIEGO.</p>
+          </details>
+
+          <details>
+            <summary>ESCENA 11</summary>
+            <p class="slugline">INT. APARTAMENTO DE LUCÍA – NOCHE</p>
+            <p class="action">LUCÍA revisa fotos antiguas con DIEGO en su teléfono, lágrimas en los ojos.</p>
+            <p class="character">LUCÍA (VOZ EN OFF)</p>
+            <p class="dialogue">¿Por qué no puedo dejarlo ir?</p>
+          </details>
+
+          <details>
+            <summary>ESCENA 12</summary>
+            <p class="slugline">INT. APARTAMENTO DE SOFÍA – NOCHE</p>
+            <p class="action">SOFÍA encuentra un mensaje de LUCÍA en el teléfono de DIEGO mientras él está en el baño.</p>
+            <p class="character">SOFÍA</p>
+            <p class="dialogue">(sorprendida)<br>¿Lucía y tú… estuvieron juntos?</p>
+          </details>
+
+          <details>
+            <summary>ESCENA 13</summary>
+            <p class="slugline">INT. BAR – NOCHE</p>
+            <p class="action">SOFÍA confronta a DIEGO en el bar, su expresión dolida.</p>
+            <p class="character">DIEGO</p>
+            <p class="dialogue">Fue algo pasajero. No significa nada.</p>
+            <p class="action">SOFÍA, herida, se aleja, su confianza tambaleándose.</p>
+          </details>
+
+          <details>
+            <summary>ESCENA 14</summary>
+            <p class="slugline">INT. CAFÉ – NOCHE</p>
+            <p class="action">LUCÍA y MATEO están en una mesa, la conversación más íntima.</p>
+            <p class="character">MATEO</p>
+            <p class="dialogue">Tuve una relación que me rompió. Por eso entiendo tu dolor.</p>
+            <p class="character">LUCÍA</p>
+            <p class="dialogue">(conmovida)<br>No estoy acostumbrada a que alguien me escuche.</p>
+          </details>
+
+          <details>
+            <summary>ESCENA 15</summary>
+            <p class="slugline">EXT. PARQUE – DÍA</p>
+            <p class="action">SOFÍA confronta a LUCÍA en un parque, la tensión palpable.</p>
+            <p class="character">SOFÍA</p>
+            <p class="dialogue">¿Por qué no me dijiste lo de Diego?</p>
+            <p class="character">LUCÍA</p>
+            <p class="dialogue">No quería perderte.</p>
+            <p class="action">SOFÍA, dolida, se aleja, dejando a LUCÍA sola.</p>
+          </details>
+        </div>
+      </div>
+    </div>
+
+    <!-- Episodio 3 -->
+    <div id="episode-3" class="episode-content guion-text">
+      <h2>EPISODIO 3: FRACTURAS</h2>
+      <button onclick="copyEpisode('episode-3')" class="copy-button mb-8">COPIAR EPISODIO</button>
+      <div class="episode-text">
+        <div class="section">
+          <p><strong>DURACIÓN POR EPISODIO:</strong> 20 minutos</p>
+          <p><strong>GÉNERO:</strong> Drama psicológico / Romance oscuro / Suspenso</p>
+        </div>
+
+        <div class="section">
+          <h3>RECAPITULACIÓN DE LA HISTORIA</h3>
+          <h4>1. SINOPSIS GENERAL:</h4>
+          <p>La confrontación entre Lucía y Sofía deja su amistad al borde del colapso. Lucía se refugia en Mateo, pero su confianza en él se tambalea cuando descubre pistas sobre su pasado turbio. Diego, sintiendo que pierde el control sobre Sofía, intensifica sus manipulaciones, mientras un nuevo personaje, ANA, una antigua conocida de Diego, entra en escena, complicando las dinámicas.</p>
+
+          <h4>2. TEMÁTICAS PRINCIPALES:</h4>
+          <ul class="list-disc pl-6">
+            <li><strong>Ruptura:</strong> La amistad entre Lucía y Sofía se desmorona.</li>
+            <li><strong>Duda:</strong> Lucía cuestiona las intenciones de Mateo.</li>
+            <li><strong>Control:</strong> Diego aprieta su agarre sobre Sofía.</li>
+            <li><strong>Revelaciones:</strong> El pasado de Mateo y Diego comienza a salir a la luz.</li>
+            <li><strong>Desconfianza:</strong> La llegada de Ana siembra más incertidumbre.</li>
+          </ul>
+
+          <h4>3. PERSONAJES Y SU SIMBOLOGÍA:</h4>
+          <ul class="list-disc pl-6">
+            <li><strong>Lucía:</strong> Luchando por su independencia, atrapada entre la esperanza y el miedo.</li>
+            <li><strong>Diego:</strong> El titiritero que manipula a todos a su alrededor.</li>
+            <li><strong>Sofía:</strong> Dividida entre la ilusión y la verdad.</li>
+            <li><strong>Mateo:</strong> Un salvador con sombras propias.</li>
+            <li><strong>Ana:</strong> Un espejo del pasado de Diego, un nuevo catalizador de caos.</li>
+          </ul>
+        </div>
+
+        <div class="section">
+          <h3>GUION – EPISODIO 3: FRACTURAS</h3>
+
+          <details>
+            <summary>ESCENA 1</summary>
+            <p class="slugline">EXT. PARQUE – DÍA</p>
+            <p class="action">LUCÍA, sola tras la confrontación con SOFÍA, camina por el parque, su rostro marcado por el dolor.</p>
+            <p class="character">LUCÍA (VOZ EN OFF)</p>
+            <p class="dialogue">Perdí a Diego. Ahora pierdo a Sofía. ¿Qué me queda?</p>
+          </details>
+
+          <details>
+            <summary>ESCENA 2</summary>
+            <p class="slugline">INT. APARTAMENTO DE SOFÍA – DÍA</p>
+            <p class="action">SOFÍA, sentada en el sofá, revisa mensajes antiguos de LUCÍA, su expresión confundida.</p>
+            <p class="character">SOFÍA</p>
+            <p class="dialogue">(murmurando)<br>¿Cómo no lo vi antes?</p>
+          </details>
+
+          <details>
+            <summary>ESCENA 3</summary>
+            <p class="slugline">INT. CAFÉ – TARDE</p>
+            <p class="action">LUCÍA y MATEO se encuentran nuevamente. MATEO nota su estado de ánimo.</p>
+            <p class="character">MATEO</p>
+            <p class="dialogue">¿Qué pasó? No estás bien.</p>
+            <p class="character">LUCÍA</p>
+            <p class="dialogue">Sofía sabe lo de Diego. Creo que la perdí.</p>
+          </details>
+
+          <details>
+            <summary>ESCENA 4</summary>
+            <p class="slugline">INT. BAR – NOCHE</p>
+            <p class="action">DIEGO y SOFÍA están en una mesa. DIEGO, percibiendo su distancia, intensifica su encanto.</p>
+            <p class="character">DIEGO</p>
+            <p class="dialogue">No dejes que Lucía te confunda. Esto es real.</p>
+            <p class="character">SOFÍA</p>
+            <p class="dialogue">No sé, Diego. Hay cosas que no me contaste.</p>
+          </details>
+
+          <details>
+            <summary>ESCENA 5</summary>
+            <p class="slugline">INT. BAR – BARRA – NOCHE</p>
+            <p class="action">MATEO sirve bebidas. ANA, una mujer elegante de unos 30 años, se acerca a la barra.</p>
+            <p class="character">ANA</p>
+            <p class="dialogue">¿Mateo? ¿Eres tú? Ha pasado tiempo.</p>
+            <p class="action">MATEO se tensa, claramente incómodo.</p>
+          </details>
+
+          <details>
+            <summary>ESCENA 6</summary>
+            <p class="slugline">INT. CAFÉ – NOCHE</p>
+            <p class="action">LUCÍA encuentra una foto antigua en el teléfono de MATEO mientras él pide cafés.</p>
+            <p class="character">LUCÍA</p>
+            <p class="dialogue">(susurrando)<br>¿Quién es esta mujer?</p>
+          </details>
+
+          <details>
+            <summary>ESCENA 7</summary>
+            <p class="slugline">INT. BAR – NOCHE</p>
+            <p class="action">ANA y DIEGO se encuentran, una chispa de reconocimiento entre ellos.</p>
+            <p class="character">ANA</p>
+            <p class="dialogue">Diego, sigues siendo el mismo. ¿No te cansas?</p>
+            <p class="character">DIEGO</p>
+            <p class="dialogue">Ana, siempre tan directa. ¿Qué haces aquí?</p>
+          </details>
+
+          <details>
+            <summary>ESCENA 8</summary>
+            <p class="slugline">EXT. CALLE – NOCHE</p>
+            <p class="action">LUCÍA camina sola, mirando el número de MATEO en su teléfono, dudando.</p>
+            <p class="character">LUCÍA (VOZ EN OFF)</p>
+            <p class="dialogue">¿Puedo confiar en él? ¿O es otro Diego?</p>
+          </details>
+
+          <details>
+            <summary>ESCENA 9</summary>
+            <p class="slugline">INT. APARTAMENTO DE SOFÍA – NOCHE</p>
+            <p class="action">SOFÍA revisa mensajes de DIEGO, cada vez más confundida.</p>
+            <p class="character">SOFÍA</p>
+            <p class="dialogue">(a sí misma)<br>¿Qué estoy haciendo?</p>
+          </details>
+
+          <details>
+            <summary>ESCENA 10</summary>
+            <p class="slugline">INT. BAR – NOCHE</p>
+            <p class="action">MATEO y ANA hablan en la barra, la tensión entre ellos creciente.</p>
+            <p class="character">ANA</p>
+            <p class="dialogue">No puedes huir de lo que pasó, Mateo.</p>
+            <p class="character">MATEO</p>
+            <p class="dialogue">No estoy huyendo. Estoy empezando de nuevo.</p>
+          </details>
+        </div>
+      </div>
+    </div>
+
+    <!-- Episodio 4 -->
+    <div id="episode-4" class="episode-content guion-text">
+      <h2>EPISODIO 4: SECRETOS AL DESCUBIERTO</h2>
+      <button onclick="copyEpisode('episode-4')" class="copy-button mb-8">COPIAR EPISODIO</button>
+      <div class="episode-text">
+        <div class="section">
+          <p><strong>DURACIÓN POR EPISODIO:</strong> 20 minutos</p>
+          <p><strong>GÉNERO:</strong> Drama psicológico / Romance oscuro / Suspenso</p>
+        </div>
+
+        <div class="section">
+          <h3>RECAPITULACIÓN DE LA HISTORIA</h3>
+          <h4>1. SINOPSIS GENERAL:</h4>
+          <p>Lucía confronta a Mateo sobre la foto que encontró, desenterrando partes de su pasado que él preferiría mantener ocultas. Sofía, cada vez más desconfiada de Diego, busca respuestas en Ana, quien revela detalles perturbadores sobre el historial de Diego. Diego, sintiendo la presión, planea un movimiento audaz para recuperar el control, mientras Lucía y Mateo se acercan más, a pesar de las dudas.</p>
+
+          <h4>2. TEMÁTICAS PRINCIPALES:</h4>
+          <ul class="list-disc pl-6">
+            <li><strong>Revelaciones:</strong> Los secretos de Mateo y Diego salen a la luz.</li>
+            <li><strong>Confianza rota:</strong> Lucía y Sofía luchan por encontrar a quién creer.</li>
+            <li><strong>Manipulación desesperada:</strong> Diego intensifica sus tácticas.</li>
+            <li><strong>Vulnerabilidad:</strong> Lucía se abre a Mateo, pero con reservas.</li>
+            <li><strong>Redención:</strong> Mateo busca dejar atrás su pasado.</li>
+          </ul>
+
+          <h4>3. PERSONAJES Y SU SIMBOLOGÍA:</h4>
+          <ul class="list-disc pl-6">
+            <li><strong>Lucía:</strong> Buscando la verdad, atrapada entre el corazón y la razón.</li>
+            <li><strong>Diego:</strong> Un depredador acorralado, cada vez más peligroso.</li>
+            <li><strong>Sofía:</strong> Despertando de la ilusión, enfrentando la realidad.</li>
+            <li><strong>Mateo:</strong> Luchando por redimirse, pero atado a su pasado.</li>
+            <li><strong>Ana:</strong> La portadora de verdades incómodas.</li>
+          </ul>
+        </div>
+
+        <div class="section">
+          <h3>GUION – EPISODIO 4: SECRETOS AL DESCUBIERTO</h3>
+
+          <details>
+            <summary>ESCENA 1</summary>
+            <p class="slugline">INT. CAFÉ – MAÑANA</p>
+            <p class="action">LUCÍA y MATEO están sentados, pero la atmósfera es tensa. LUCÍA sostiene el teléfono de MATEO, mostrando la foto.</p>
+            <p class="character">LUCÍA</p>
+            <p class="dialogue">¿Quién es ella, Mateo? No me mientas.</p>
+            <p class="character">MATEO</p>
+            <p class="dialogue">(suspirando)<br>Es alguien de mi pasado. No estoy orgulloso de lo que pasó.</p>
+          </details>
+
+          <details>
+            <summary>ESCENA 2</summary>
+            <p class="slugline">INT. APARTAMENTO DE SOFÍA – DÍA</p>
+            <p class="action">SOFÍA se reúne con ANA, buscando respuestas.</p>
+            <p class="character">SOFÍA</p>
+            <p class="dialogue">¿Qué sabes de Diego? Necesito la verdad.</p>
+            <p class="character">ANA</p>
+            <p class="dialogue">Diego destruye todo lo que toca. Ten cuidado.</p>
+          </details>
+
+          <details>
+            <summary>ESCENA 3</summary>
+            <p class="slugline">INT. BAR – NOCHE</p>
+            <p class="action">DIEGO, solo en una mesa, escribe un mensaje a SOFÍA, su expresión calculadora.</p>
+            <p class="character">DIEGO</p>
+            <p class="dialogue">(murmurando)<br>No vas a dejarme tan fácil.</p>
+          </details>
+
+          <details>
+            <summary>ESCENA 4</summary>
+            <p class="slugline">EXT. CALLE – NOCHE</p>
+            <p class="action">LUCÍA y MATEO caminan juntos, la tensión aún presente.</p>
+            <p class="character">LUCÍA</p>
+            <p class="dialogue">No quiero más secretos, Mateo.</p>
+            <p class="character">MATEO</p>
+            <p class="dialogue">Te contaré todo. Pero necesito tiempo.</p>
+          </details>
+
+          <details>
+            <summary>ESCENA 5</summary>
+            <p class="slugline">INT. BAR – NOCHE</p>
+            <p class="action">SOFÍA confronta a DIEGO, su voz temblorosa.</p>
+            <p class="character">SOFÍA</p>
+            <p class="dialogue">Ana me contó todo. ¿Cómo pudiste?</p>
+            <p class="character">DIEGO</p>
+            <p class="dialogue">Ana exagera. Tú me conoces, Sofía.</p>
+          </details>
+        </div>
+      </div>
+    </div>
+
+    <!-- Episodio 5 -->
+    <div id="episode-5" class="episode-content guion-text">
+      <h2>EPISODIO 5: CRUCE DE CAMINOS</h2>
+      <button onclick="copyEpisode('episode-5')" class="copy-button mb-8">COPIAR EPISODIO</button>
+      <div class="episode-text">
+        <div class="section">
+          <p><strong>DURACIÓN POR EPISODIO:</strong> 20 minutos</p>
+          <p><strong>GÉNERO:</strong> Drama psicológico / Romance oscuro / Suspenso</p>
+        </div>
+
+        <div class="section">
+          <h3>RECAPITULACIÓN DE LA HISTORIA</h3>
+          <h4>1. SINOPSIS GENERAL:</h4>
+          <p>Lucía y Mateo se enfrentan a una encrucijada: confiar plenamente o retroceder. Sofía, devastada por las revelaciones de Ana, decide cortar con Diego, pero él no está dispuesto a dejarla ir. Ana se convierte en un puente entre Lucía y Sofía, intentando reparar su amistad. Diego planea un movimiento final para mantener su influencia, mientras un evento inesperado cambia el rumbo de todos.</p>
+
+          <h4>2. TEMÁTICAS PRINCIPALES:</h4>
+          <ul class="list-disc pl-6">
+            <li><strong>Decisión:</strong> Lucía y Mateo deben elegir entre confiar o protegerse.</li>
+            <li><strong>Ruptura definitiva:</strong> Sofía intenta liberarse de Diego.</li>
+            <li><strong>Reconciliación:</strong> Ana ayuda a Lucía y Sofía a sanar.</li>
+            <li><strong>Desesperación:</strong> Diego recurre a tácticas extremas.</li>
+            <li><strong>Imprevistos:</strong> Un evento sacude las dinámicas.</li>
+          </ul>
+
+          <h4>3. PERSONAJES Y SU SIMBOLOGÍA:</h4>
+          <ul class="list-disc pl-6">
+            <li><strong>Lucía:</strong> En el borde de la transformación, buscando fuerza.</li>
+            <li><strong>Diego:</strong> Un hombre perdiendo el control, volviéndose impredecible.</li>
+            <li><strong>Sofía:</strong> Despertando, pero vulnerable.</li>
+            <li><strong>Mateo:</strong> Luchando por ser honesto, temiendo perder a Lucía.</li>
+            <li><strong>Ana:</strong> El puente hacia la verdad y la reconciliación.</li>
+          </ul>
+        </div>
+
+        <div class="section">
+          <h3>GUION – EPISODIO 5: CRUCE DE CAMINOS</h3>
+
+          <details>
+            <summary>ESCENA 1</summary>
+            <p class="slugline">INT. CAFÉ – MAÑANA</p>
+            <p class="action">LUCÍA y MATEO están en su mesa habitual, pero la atmósfera es pesada.</p>
+            <p class="character">LUCÍA</p>
+            <p class="dialogue">Necesito saber todo, Mateo. No más medias verdades.</p>
+            <p class="character">MATEO</p>
+            <p class="dialogue">Lo haré. Pero no es fácil hablar de eso.</p>
+          </details>
+
+          <details>
+            <summary>ESCENA 2</summary>
+            <p class="slugline">INT. APARTAMENTO DE SOFÍA – DÍA</p>
+            <p class="action">SOFÍA escribe un mensaje a DIEGO: “Esto se acaba.” Su mano tiembla al enviar.</p>
+          </details>
+
+          <details>
+            <summary>ESCENA 3</summary>
+            <p class="slugline">INT. BAR – NOCHE</p>
+            <p class="action">DIEGO lee el mensaje de SOFÍA, su rostro endureciéndose.</p>
+            <p class="character">DIEGO</p>
+            <p class="dialogue">(a sí mismo)<br>No tan rápido, Sofía.</p>
+          </details>
+
+          <details>
+            <summary>ESCENA 4</summary>
+            <p class="slugline">EXT. PARQUE – DÍA</p>
+            <p class="action">ANA se encuentra con LUCÍA, intentando mediar.</p>
+            <p class="character">ANA</p>
+            <p class="dialogue">Sofía está dolida, pero te quiere. Habla con ella.</p>
+            <p class="character">LUCÍA</p>
+            <p class="dialogue">No sé si puedo. Hay demasiado dolor.</p>
+          </details>
+
+          <details>
+            <summary>ESCENA 5</summary>
+            <p class="slugline">INT. BAR – NOCHE</p>
+            <p class="action">DIEGO se acerca a SOFÍA, su tono manipulador.</p>
+            <p class="character">DIEGO</p>
+            <p class="dialogue">No me dejes, Sofía. Somos más que esto.</p>
+            <p class="character">SOFÍA</p>
+            <p class="dialogue">Ya no te creo, Diego.</p>
+          </details>
+        </div>
+      <!-- Continuing from Episode 6 -->
+  <div id="episode-6" class="episode-content guion-text">
+    <h2>EPISODIO 6: SOMBRAS QUE ACECHAN</h2>
+    <button onclick="copyEpisode('episode-6')" class="copy-button mb-8">COPIAR EPISODIO</button>
+    <div class="episode-text">
+      <div class="section">
+        <p><strong>DURACIÓN POR EPISODIO:</strong> 20 minutos</p>
+        <p><strong>GÉNERO:</strong> Drama psicológico / Romance oscuro / Suspenso</p>
+      </div>
+
+      <div class="section">
+        <h3>RECAPITULACIÓN DE LA HISTORIA</h3>
+        <h4>1. SINOPSIS GENERAL:</h4>
+        <p>Lucía y Sofía intentan reconstruir su amistad, pero las sombras de Diego persisten. Diego, desesperado por recuperar el control, confronta a Ana, quien revela un secreto devastador sobre su pasado compartido. Mateo, presionado por Lucía, comparte más sobre su vida anterior, pero una amenaza inesperada pone en peligro su relación. El bar se convierte en el escenario de un enfrentamiento que cambiará todo.</p>
+
+        <h4>2. TEMÁTICAS PRINCIPALES:</h4>
+        <ul class="list-disc pl-6">
+          <li><strong>Reconciliación tentativa:</strong> Lucía y Sofía buscan sanar su amistad.</li>
+          <li><strong>Secretos oscuros:</strong> Ana revela el verdadero alcance de las acciones de Diego.</li>
+          <li><strong>Vulnerabilidad expuesta:</strong> Mateo abre su corazón, pero a un costo.</li>
+          <li><strong>Amenaza creciente:</strong> Diego se vuelve más peligroso.</li>
+          <li><strong>Confrontación:</strong> Las tensiones llegan a un punto crítico.</li>
+        </ul>
+
+        <h4>3. PERSONAJES Y SU SIMBOLOGÍA:</h4>
+        <ul class="list-disc pl-6">
+          <li><strong>Lucía:</strong> Buscando redención y fuerza, pero temerosa de nuevas traiciones.</li>
+          <li><strong>Diego:</strong> Un hombre al borde de la obsesión, perdiendo su fachada.</li>
+          <li><strong>Sofía:</strong> Luchando por liberarse de Diego, buscando apoyo en Lucía.</li>
+          <li><strong>Mateo:</strong> Un alma herida que quiere proteger a Lucía.</li>
+          <li><strong>Ana:</strong> La voz de la verdad, pero con sus propios motivos.</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3>GUION – EPISODIO 6: SOMBRAS QUE ACECHAN</h3>
+
+        <details>
+          <summary>ESCENA 1</summary>
+          <p class="slugline">INT. CAFÉ – TARDE</p>
+          <p class="action">LUCÍA y SOFÍA se sientan frente a frente, la atmósfera cargada de incomodidad pero con un deseo de reconciliación.</p>
+          <p class="character">LUCÍA</p>
+          <p class="dialogue">No quería hacerte daño, Sofía. Debí contarte todo.</p>
+          <p class="character">SOFÍA</p>
+          <p class="dialogue">Yo tampoco fui justa. Me cegó Diego.</p>
+        </details>
+
+        <details>
+          <summary>ESCENA 2</summary>
+          <p class="slugline">INT. BAR – NOCHE</p>
+          <p class="action">DIEGO confronta a ANA en una esquina del bar, su voz baja pero amenazante.</p>
+          <p class="character">DIEGO</p>
+          <p class="dialogue">¿Por qué sigues hablando de mí, Ana? Déjalo ir.</p>
+          <p class="character">ANA</p>
+          <p class="dialogue">No puedo. No después de lo que hiciste.</p>
+        </details>
+
+        <details>
+          <summary>ESCENA 3</summary>
+          <p class="slugline">EXT. CALLE – NOCHE</p>
+          <p class="action">MATEO camina con LUCÍA, su expresión seria.</p>
+          <p class="character">MATEO</p>
+          <p class="dialogue">Mi ex… me dejó cicatrices. No solo emocionales.</p>
+          <p class="character">LUCÍA</p>
+          <p class="dialogue">¿Qué quieres decir?</p>
+          <p class="action">MATEO duda, luego levanta su manga, revelando una cicatriz.</p>
+        </details>
+
+        <details>
+          <summary>ESCENA 4</summary>
+          <p class="slugline">INT. APARTAMENTO DE SOFÍA – NOCHE</p>
+          <p class="action">SOFÍA recibe un mensaje de DIEGO: “No me ignores. Hablaremos.” Su rostro muestra miedo.</p>
+        </details>
+
+        <details>
+          <summary>ESCENA 5</summary>
+          <p class="slugline">INT. BAR – NOCHE</p>
+          <p class="action">ANA y LUCÍA se encuentran en el bar. ANA revela más sobre Diego.</p>
+          <p class="character">ANA</p>
+          <p class="dialogue">Diego no solo rompe corazones. Destruye vidas.</p>
+          <p class="character">LUCÍA</p>
+          <p class="dialogue">¿Qué hizo? Dímelo.</p>
+        </details>
+      </div>
+    </div>
+  </div>
+
+  <!-- Episodio 7 -->
+  <div id="episode-7" class="episode-content guion-text">
+    <h2>EPISODIO 7: ENFRENTAMIENTOS</h2>
+    <button onclick="copyEpisode('episode-7')" class="copy-button mb-8">COPIAR EPISODIO</button>
+    <div class="episode-text">
+      <div class="section">
+        <p><strong>DURACIÓN POR EPISODIO:</strong> 20 minutos</p>
+        <p><strong>GÉNERO:</strong> Drama psicológico / Romance oscuro / Suspenso</p>
+      </div>
+
+      <div class="section">
+        <h3>RECAPITULACIÓN DE LA HISTORIA</h3>
+        <h4>1. SINOPSIS GENERAL:</h4>
+        <p>Lucía y Sofía, ahora aliadas, confrontan a Diego, pero su reacción es más violenta de lo esperado. Mateo, protector, interviene, revelando más sobre su pasado para ganar la confianza de Lucía. Ana se convierte en un blanco para Diego, quien busca silenciarla. Un evento en el bar lleva las tensiones al límite, forzando a todos a tomar decisiones irreversibles.</p>
+
+        <h4>2. TEMÁTICAS PRINCIPALES:</h4>
+        <ul class="list-disc pl-6">
+          <li><strong>Confrontación directa:</strong> Lucía y Sofía enfrentan a Diego.</li>
+          <li><strong>Protección:</strong> Mateo arriesga todo por Lucía.</li>
+          <li><strong>Venganza:</strong> Diego busca castigar a Ana.</li>
+          <li><strong>Decisiones críticas:</strong> Los personajes llegan a un punto sin retorno.</li>
+          <li><strong>Unión:</strong> La alianza entre Lucía y Sofía se fortalece.</li>
+        </ul>
+
+        <h4>3. PERSONAJES Y SU SIMBOLOGÍA:</h4>
+        <ul class="list-disc pl-6">
+          <li><strong>Lucía:</strong> Encontrando su voz, lista para luchar.</li>
+          <li><strong>Diego:</strong> Un hombre acorralado, mostrando su verdadera naturaleza.</li>
+          <li><strong>Sofía:</strong> Renaciendo, decidida a romper con el pasado.</li>
+          <li><strong>Mateo:</strong> El protector, enfrentando sus propios demonios.</li>
+          <li><strong>Ana:</strong> Una figura de resistencia, pero en peligro.</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3>GUION – EPISODIO 7: ENFRENTAMIENTOS</h3>
+
+        <details>
+          <summary>ESCENA 1</summary>
+          <p class="slugline">INT. BAR – NOCHE</p>
+          <p class="action">LUCÍA y SOFÍA confrontan a DIEGO en una mesa apartada, la tensión palpable.</p>
+          <p class="character">LUCÍA</p>
+          <p class="dialogue">Ya basta, Diego. Sabemos quién eres.</p>
+          <p class="character">DIEGO</p>
+          <p class="dialogue">(frío)<br>¿Y qué van a hacer al respecto?</p>
+        </details>
+
+        <details>
+          <summary>ESCENA 2</summary>
+          <p class="slugline">INT. BAR – BARRA – NOCHE</p>
+          <p class="action">MATEO observa la confrontación desde la barra, listo para intervenir.</p>
+          <p class="character">MATEO</p>
+          <p class="dialogue">(a un compañero)<br>Esto no va a terminar bien.</p>
+        </details>
+
+        <details>
+          <summary>ESCENA 3</summary>
+          <p class="slugline">INT. BAR – NOCHE</p>
+          <p class="action">DIEGO agarra el brazo de SOFÍA, su tono amenazante.</p>
+          <p class="character">DIEGO</p>
+          <p class="dialogue">No me dejes, Sofía. No te conviene.</p>
+          <p class="action">MATEO se acerca rápidamente, interponiéndose.</p>
+        </details>
+
+        <details>
+          <summary>ESCENA 4</summary>
+          <p class="slugline">EXT. BAR – CALLE – NOCHE</p>
+          <p class="action">ANA sale del bar, mirando nerviosamente a su alrededor. Una sombra la sigue.</p>
+        </details>
+
+        <details>
+          <summary>ESCENA 5</summary>
+          <p class="slugline">INT. CAFÉ – NOCHE</p>
+          <p class="action">LUCÍA y MATEO, tras la confrontación, hablan en el café.</p>
+          <p class="character">MATEO</p>
+          <p class="dialogue">No dejaré que Diego te lastime.</p>
+          <p class="character">LUCÍA</p>
+          <p class="dialogue">No sé cómo agradecerte.</p>
+        </details>
+      </div>
+    </div>
+  </div>
+
+  <!-- Episodio 8 -->
+  <div id="episode-8" class="episode-content guion-text">
+    <h2>EPISODIO 8: EL PESO DE LA VERDAD</h2>
+    <button onclick="copyEpisode('episode-8')" class="copy-button mb-8">COPIAR EPISODIO</button>
+    <div class="episode-text">
+      <div class="section">
+        <p><strong>DURACIÓN POR EPISODIO:</strong> 20 minutos</p>
+        <p><strong>GÉNERO:</strong> Drama psicológico / Romance oscuro / Suspenso</p>
+      </div>
+
+      <div class="section">
+        <h3>RECAPITULACIÓN DE LA HISTORIA</h3>
+        <h4>1. SINOPSIS GENERAL:</h4>
+        <p>La confrontación en el bar deja a todos sacudidos. Ana, ahora en peligro, revela el alcance completo del daño causado por Diego, uniendo a Lucía y Sofía en un propósito común. Mateo enfrenta las consecuencias de su intervención, mientras Diego planea un acto final de venganza. La verdad sobre el pasado de todos comienza a esclarecerse, pero a un costo emocional.</p>
+
+        <h4>2. TEMÁTICAS PRINCIPALES:</h4>
+        <ul class="list-disc pl-6">
+          <li><strong>Unidad:</strong> Lucía y Sofía se fortalecen juntas.</li>
+          <li><strong>Verdad dolorosa:</strong> Ana expone el pasado de Diego.</li>
+          <li><strong>Consecuencias:</strong> Mateo enfrenta las repercusiones de sus acciones.</li>
+          <li><strong>Venganza:</strong> Diego planea un golpe final.</li>
+          <li><strong>Claridad:</strong> Los secretos se desentrañan.</li>
+        </ul>
+
+        <h4>3. PERSONAJES Y SU SIMBOLOGÍA:</h4>
+        <ul class="list-disc pl-6">
+          <li><strong>Lucía:</strong> Encontrando fuerza en la unión con Sofía.</li>
+          <li><strong>Diego:</strong> Un hombre consumido por su propia oscuridad.</li>
+          <li><strong>Sofía:</strong> Comprometida a enfrentar la verdad.</li>
+          <li><strong>Mateo:</strong> Protector, pero enfrentando su pasado.</li>
+          <li><strong>Ana:</strong> La catalizadora de la verdad, en riesgo.</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3>GUION – EPISODIO 8: EL PESO DE LA VERDAD</h3>
+
+        <details>
+          <summary>ESCENA 1</summary>
+          <p class="slugline">INT. CAFÉ – MAÑANA</p>
+          <p class="action">LUCÍA, SOFÍA y ANA están juntas, planeando cómo enfrentar a Diego.</p>
+          <p class="character">ANA</p>
+          <p class="dialogue">Diego manipuló a muchas antes que ustedes. Yo fui una.</p>
+          <p class="character">SOFÍA</p>
+          <p class="dialogue">No dejaré que siga haciendo esto.</p>
+        </details>
+
+        <details>
+          <summary>ESCENA 2</summary>
+          <p class="slugline">INT. BAR – NOCHE</p>
+          <p class="action">MATEO recibe una advertencia de su jefe tras la confrontación.</p>
+          <p class="character">JEFE</p>
+          <p class="dialogue">Mantente fuera de problemas, Mateo, o estás fuera.</p>
+        </details>
+
+        <details>
+          <summary>ESCENA 3</summary>
+          <p class="slugline">EXT. CALLE – NOCHE</p>
+          <p class="action">DIEGO sigue a ANA desde la distancia, su expresión oscura.</p>
+        </details>
+
+        <details>
+          <summary>ESCENA 4</summary>
+          <p class="slugline">INT. APARTAMENTO DE LUCÍA – NOCHE</p>
+          <p class="action">LUCÍA y MATEO hablan, más cerca que nunca.</p>
+          <p class="character">LUCÍA</p>
+          <p class="dialogue">Gracias por estar ahí. No sé qué haría sin ti.</p>
+          <p class="character">MATEO</p>
+          <p class="dialogue">No estás sola, Lucía. Nunca más.</p>
+        </details>
+
+        <details>
+          <summary>ESCENA 5</summary>
+          <p class="slugline">INT. BAR – NOCHE</p>
+          <p class="action">DIEGO entra, buscando a ANA, su actitud amenazante.</p>
+          <p class="character">DIEGO</p>
+          <p class="dialogue">¿Dónde está Ana? Esto termina hoy.</p>
+        </details>
+      </div>
+    </div>
+  </div>
+
+  <!-- Episodio 9 -->
+  <div id="episode-9" class="episode-content guion-text">
+    <h2>EPISODIO 9: EL FINAL DEL JUEGO</h2>
+    <button onclick="copyEpisode('episode-9')" class="copy-button mb-8">COPIAR EPISODIO</button>
+    <div class="episode-text">
+      <div class="section">
+        <p><strong>DURACIÓN POR EPISODIO:</strong> 20 minutos</p>
+        <p><strong>GÉNERO:</strong> Drama psicológico / Romance oscuro / Suspenso</p>
+      </div>
+
+      <div class="section">
+        <h3>RECAPITULACIÓN DE LA HISTORIA</h3>
+        <h4>1. SINOPSIS GENERAL:</h4>
+        <p>Diego, acorralado, lleva a cabo un plan desesperado para recuperar el control, poniendo a Ana en grave peligro. Lucía y Sofía, decididas a protegerla, trabajan con Mateo para exponer a Diego. La verdad sobre el pasado de Mateo se revela completamente, fortaleciendo su vínculo con Lucía. El clímax se desarrolla en el bar, donde las decisiones de todos tendrán consecuencias permanentes.</p>
+
+        <h4>2. TEMÁTICAS PRINCIPALES:</h4>
+        <ul class="list-disc pl-6">
+          <li><strong>Desenmascaramiento:</strong> Diego es expuesto por completo.</li>
+          <li><strong>Sacrificio:</strong> Ana y Mateo arriesgan todo.</li>
+          <li><strong>Unidad final:</strong> Lucía y Sofía se consolidan como aliadas.</li>
+          <li><strong>Resolución:</strong> Los personajes enfrentan las consecuencias de sus elecciones.</li>
+          <li><strong>Redención:</strong> Mateo encuentra paz en su verdad.</li>
+        </ul>
+
+        <h4>3. PERSONAJES Y SU SIMBOLOGÍA:</h4>
+        <ul class="list-disc pl-6">
+          <li><strong>Lucía:</strong> Una guerrera renacida, lista para cerrar su pasado.</li>
+          <li><strong>Diego:</strong> Un hombre derrotado, enfrentando su caída.</li>
+          <li><strong>Sofía:</strong> Fuerte, decidida a proteger a sus seres queridos.</li>
+          <li><strong>Mateo:</strong> Redimido, pero pagando un precio.</li>
+          <li><strong>Ana:</strong> La voz de la justicia, en peligro mortal.</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3>GUION – EPISODIO 9: EL FINAL DEL JUEGO</h3>
+
+        <details>
+          <summary>ESCENA 1</summary>
+          <p class="slugline">INT. BAR – NOCHE</p>
+          <p class="action">DIEGO acorrala a ANA en un rincón del bar, su voz baja y peligrosa.</p>
+          <p class="character">DIEGO</p>
+          <p class="dialogue">Esto termina ahora, Ana.</p>
+          <p class="character">ANA</p>
+          <p class="dialogue">No tienes poder sobre mí.</p>
+        </details>
+
+        <details>
+          <summary>ESCENA 2</summary>
+          <p class="slugline">INT. CAFÉ – NOCHE</p>
+          <p class="action">LUCÍA y SOFÍA planean cómo proteger a ANA.</p>
+          <p class="character">SOFÍA</p>
+          <p class="dialogue">No dejaré que Diego le haga daño.</p>
+          <p class="character">LUCÍA</p>
+          <p class="dialogue">Necesitamos pruebas. Algo que lo detenga.</p>
+        </details>
+
+        <details>
+          <summary>ESCENA 3</summary>
+          <p class="slugline">INT. BAR – NOCHE</p>
+          <p class="action">MATEO interviene, enfrentando a DIEGO.</p>
+          <p class="character">MATEO</p>
+          <p class="dialogue">Déjala en paz, Diego.</p>
+          <p class="character">DIEGO</p>
+          <p class="dialogue">No te metas, camarero.</p>
+        </details>
+
+        <details>
+          <summary>ESCENA 4</summary>
+          <p class="slugline">EXT. CALLE – NOCHE</p>
+          <p class="action">ANA huye del bar, pero DIEGO la sigue, la tensión en aumento.</p>
+        </details>
+
+        <details>
+          <summary>ESCENA 5</summary>
+          <p class="slugline">INT. APARTAMENTO DE LUCÍA – NOCHE</p>
+          <p class="action">MATEO revela todo sobre su pasado a LUCÍA.</p>
+          <p class="character">MATEO</p>
+          <p class="dialogue">Estuve en un lugar oscuro. Pero tú me haces querer ser mejor.</p>
+          <p class="character">LUCÍA</p>
+          <p class="dialogue">Confío en ti, Mateo.</p>
+        </details>
+      </div>
+    </div>
+  </div>
+
+  <!-- Episodio 10 -->
+  <div id="episode-10" class="episode-content guion-text">
+    <h2>EPISODIO 10: LUZ EN LA OSCURIDAD</h2>
+    <button onclick="copyEpisode('episode-10')" class="copy-button mb-8">COPIAR EPISODIO</button>
+    <div class="episode-text">
+      <div class="section">
+        <p><strong>DURACIÓN POR EPISODIO:</strong> 20 minutos</p>
+        <p><strong>GÉNERO:</strong> Drama psicológico / Romance oscuro / Suspenso</p>
+      </div>
+
+      <div class="section">
+        <h3>RECAPITULACIÓN DE LA HISTORIA</h3>
+        <h4>1. SINOPSIS GENERAL:</h4>
+        <p>El clímax final en el bar lleva a una resolución definitiva. Lucía, Sofía y Mateo logran exponer a Diego, pero no sin sacrificios. Ana escapa del peligro, y la verdad sobre Diego lo destruye. Lucía y Mateo encuentran un nuevo comienzo, mientras Sofía decide seguir adelante sola, pero más fuerte. El bar, testigo de tanto dolor, se convierte en un lugar de esperanza.</p>
+
+        <h4>2. TEMÁTICAS PRINCIPALES:</h4>
+        <ul class="list-disc pl-6">
+          <li><strong>Justicia:</strong> Diego enfrenta las consecuencias de sus acciones.</li>
+          <li><strong>Renacimiento:</strong> Lucía y Sofía encuentran fuerza interior.</li>
+          <li><strong>Amor verdadero:</strong> Lucía y Mateo consolidan su vínculo.</li>
+          <li><strong>Independencia:</strong> Sofía elige su propio camino.</li>
+          <li><strong>Esperanza:</strong> El bar se transforma en un símbolo de redención.</li>
+        </ul>
+
+        <h4>3. PERSONAJES Y SU SIMBOLOGÍA:</h4>
+        <ul class="list-disc pl-6">
+          <li><strong>Lucía:</strong> Transformada, lista para un nuevo capítulo.</li>
+          <li><strong>Diego:</strong> Derrotado, su manipulación expuesta.</li>
+          <li><strong>Sofía:</strong> Independiente, lista para sanar sola.</li>
+          <li><strong>Mateo:</strong> Redimido, un pilar para Lucía.</li>
+          <li><strong>Ana:</strong> Sobreviviente, libre al fin.</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3>GUION – EPISODIO 10: LUZ EN LA OSCURIDAD</h3>
+
+        <details>
+          <summary>ESCENA 1</summary>
+          <p class="slugline">INT. BAR – NOCHE</p>
+          <p class="action">LUCÍA, SOFÍA y MATEO enfrentan a DIEGO, pruebas en mano: mensajes, grabaciones, testimonios.</p>
+          <p class="character">LUCÍA</p>
+          <p class="dialogue">Se acabó, Diego. Todos saben quién eres.</p>
+          <p class="character">DIEGO</p>
+          <p class="dialogue">(desesperado)<br>No pueden hacerme esto.</p>
+        </details>
+
+        <details>
+          <summary>ESCENA 2</summary>
+          <p class="slugline">EXT. CALLE – NOCHE</p>
+          <p class="action">ANA, a salvo, agradece a LUCÍA y SOFÍA.</p>
+          <p class="character">ANA</p>
+          <p class="dialogue">Gracias por no dejarme sola.</p>
+        </details>
+
+        <details>
+          <summary>ESCENA 3</summary>
+          <p class="slugline">INT. BAR – NOCHE</p>
+          <p class="action">DIEGO es confrontado por los clientes del bar, su reputación destruida. Se va, derrotado.</p>
+        </details>
+
+        <details>
+          <summary>ESCENA 4</summary>
+          <p class="slugline">INT. CAFÉ – DÍA</p>
+          <p class="action">LUCÍA y MATEO, juntos, planean un futuro.</p>
+          <p class="character">LUCÍA</p>
+          <p class="dialogue">Por primera vez, siento que puedo respirar.</p>
+          <p class="character">MATEO</p>
+          <p class="dialogue">Y yo que puedo ser quien soy.</p>
+        </details>
+
+        <details>
+          <summary>ESCENA 5</summary>
+          <p class="slugline">EXT. BAR – DÍA</p>
+          <p class="action">SOFÍA camina sola, pero con una sonrisa. La cámara se aleja, mostrando el bar bajo la luz del sol.</p>
+          <p class="character">SOFÍA (VOZ EN OFF)</p>
+          <p class="dialogue">No necesito a nadie para brillar.</p>
+          <p class="transition">FUNDIDO A NEGRO.</p>
+        </details>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function showEpisode(episodeNumber) {
+      // Remove active class from all buttons and episodes
+      const buttons = document.querySelectorAll('.nav-button');
+      const episodes = document.querySelectorAll('.episode-content');
+      buttons.forEach(btn => btn.classList.remove('active'));
+      episodes.forEach(el => {
+        el.classList.remove('active');
+        el.style.opacity = '0';
+        el.style.display = 'none';
+      });
+
+      // Activate the selected button and episode
+      const activeButton = document.getElementById(`nav-${episodeNumber}`);
+      const activeEpisode = document.getElementById(`episode-${episodeNumber}`);
+      activeButton.classList.add('active');
+      activeEpisode.style.display = 'block';
+      setTimeout(() => {
+        activeEpisode.style.opacity = '1';
+        activeEpisode.classList.add('active');
+      }, 10);
+    }
+
+    function copyEpisode(episodeId) {
+      const text = document.querySelector(`#${episodeId} .episode-text`).innerText;
+      navigator.clipboard.writeText(text).then(() => {
+        alert('¡Episodio copiado al portapapeles!');
+      }).catch(err => {
+        alert('Error al copiar: ' + err);
+      });
+    }
+
+    // Initialize with Episode 1 active
+    document.addEventListener('DOMContentLoaded', () => {
+      showEpisode(1);
+    });
+  </script>
+</body>
+</html>
